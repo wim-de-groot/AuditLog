@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MaartenH.Minor.Miffy.Abstractions" Version="0.8.6" />
+      <PackageReference Include="MaartenH.Minor.Miffy.Microservices" Version="0.8.6" />
+      <PackageReference Include="MaartenH.Minor.Miffy.RabbitMQBus" Version="0.8.6" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AuditLog.Abstractions\AuditLog.Abstractions.csproj" />
+      <ProjectReference Include="..\AuditLog.Domain\AuditLog.Domain.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,27 @@
+{
+    "stryker-config":
+    {
+      "reporters":[
+        "html"
+      ],
+      "test-runner": "vstest",
+      "log-level": "info",
+      "log-file":true,
+      "timeout-ms": 10000,
+      "project-file": "AuditLog.csproj",
+      "max-concurrent-test-runners": 4,
+      "threshold-high": 80,
+      "threshold-low": 60,
+      "threshold-break": 0,
+      "file-patterns": [
+        "!wwwroot"
+      ],
+      "ignore-methods":  [
+        "Log",
+        "LogTrace",
+        "LogError",
+        "ToString",
+        "HashCode"
+      ]
+    }
+  }
