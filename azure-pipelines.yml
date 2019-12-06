@@ -88,3 +88,5 @@ stages:
               tags: $(Build.BuildId)
               buildContext: 'AuditLog.ConsoleClient/AuditLog.ConsoleClient/'
               Dockerfile: 'AuditLog.ConsoleClient/AuditLog.ConsoleClient/Dockerfile'
+
+          
