@@ -81,8 +81,12 @@ stages:
             displayName: 'dotnet publish'
             inputs:
               command: publish
+              publishWebProjects: false
               projects: AuditLog.ConsoleClient/AuditLog.ConsoleClient.csproj
+              arguments: '--configuration Release --self-contained -f "netcoreapp3.0" -r "linux-x64" --output "$(projectPath)/obj/docker/publish"'
               patchVersion: $(Build.BuildId)
+              zipAfterPublish: false
+              modifyOutputPath: false
 
           - task: Docker@2
             displayName: 'docker build and publish'
