@@ -4,6 +4,7 @@ using System.Linq;
 using AuditLog.Abstractions;
 using AuditLog.Domain;
 using System.Reflection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Minor.Miffy.MicroServices.Events;
 using Moq;
@@ -186,7 +187,7 @@ namespace AuditLog.Test
             });
 
             // Assert
-            Assert.AreEqual(200, result.Code);
+            Assert.AreEqual(StatusCodes.Status200OK, result.Code);
             Assert.AreEqual("OK", result.Status);
         }
 
@@ -211,7 +212,7 @@ namespace AuditLog.Test
             });
 
             // Assert
-            Assert.AreEqual(500, result.Code);
+            Assert.AreEqual(StatusCodes.Status500InternalServerError, result.Code);
             Assert.AreEqual("Internal Error", result.Status);
         }
 
