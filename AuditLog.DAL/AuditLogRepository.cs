@@ -16,11 +16,10 @@ namespace AuditLog.DAL
             _context.LogEntries;
 
         public IEnumerable<LogEntry> FindBy(LogEntryCriteria criteria) =>
-            _context.LogEntries.Where(entry =>
-                (criteria.FromTimestamp == null || entry.Timestamp >= criteria.FromTimestamp) &&
-                (criteria.ToTimestamp == null || entry.Timestamp <= criteria.ToTimestamp) &&
-                (criteria.EventType == null || entry.EventType == criteria.EventType)
-            );
+            _context.LogEntries
+                .Where(entry => criteria.FromTimestamp == null || entry.Timestamp >= criteria.FromTimestamp)
+                .Where(entry => criteria.ToTimestamp == null || entry.Timestamp <= criteria.ToTimestamp)
+                .Where(entry => criteria.EventType == null || entry.EventType == criteria.EventType);
 
         public void Create(LogEntry entity)
         {
