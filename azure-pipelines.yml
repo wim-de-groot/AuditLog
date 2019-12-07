@@ -17,7 +17,11 @@ trigger:
 
 variables:
   buildConfiguration: 'Release'
-  projects: AuditLog.ConsoleClient/AuditLog.ConsoleClient.csproj
+  projects: |
+    AuditLog/AuditLog.csproj
+    AuditLog.DAL/AuditLog.DAL.csproj
+    AuditLog.Domain/AuditLog.Domain.csproj
+    AuditLog.ConsoleClient/AuditLog.ConsoleClient.csproj
   testProjects: |
     AuditLog.Test/AuditLog.Test.csproj
     AuditLog.DAL.Test/AuditLog.DAL.Test.csproj
