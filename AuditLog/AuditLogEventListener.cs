@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using AuditLog.Abstractions;
 using AuditLog.Domain;
 using Microsoft.Extensions.Logging;
