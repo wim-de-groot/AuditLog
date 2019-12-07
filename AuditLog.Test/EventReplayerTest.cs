@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using AuditLog.Abstractions;
 using AuditLog.Domain;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Minor.Miffy;
 using Moq;
@@ -14,6 +14,12 @@ namespace AuditLog.Test
     [TestClass]
     public class EventReplayerTest
     {
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            AuditLogLoggerFactory.LoggerFactory = NullLoggerFactory.Instance;
+        }
+        
         [TestMethod]
         public void ReplayLogEntryCallsCreateBasicProperties()
         {
@@ -81,10 +87,10 @@ namespace AuditLog.Test
         public void ReplayLogEntryBasicPublishesTheRightValues()
         {
             // Arrange
-            string exchangeName = "";
+            var exchangeName = "";
             long timestamp = 0;
-            string key = "";
-            string type = "";
+            var key = "";
+            var type = "";
             byte[] buffer = null;
             
             var properties = new BasicProperties();

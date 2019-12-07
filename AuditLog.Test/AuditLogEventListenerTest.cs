@@ -2,6 +2,7 @@ using System.Linq;
 using System.Reflection;
 using AuditLog.Abstractions;
 using AuditLog.Domain;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Minor.Miffy.MicroServices.Events;
 using Moq;
@@ -11,6 +12,12 @@ namespace AuditLog.Test
     [TestClass]
     public class AuditLogEventListenerTest
     {
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            AuditLogLoggerFactory.LoggerFactory = NullLoggerFactory.Instance;
+        }
+        
         [TestMethod]
         public void HasHandleMethod()
         {

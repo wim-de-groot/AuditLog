@@ -5,6 +5,7 @@ using AuditLog.Abstractions;
 using AuditLog.Domain;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Minor.Miffy.MicroServices.Events;
 using Moq;
@@ -14,6 +15,12 @@ namespace AuditLog.Test
     [TestClass]
     public class AuditLogCommandListenerTest
     {
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            AuditLogLoggerFactory.LoggerFactory = NullLoggerFactory.Instance;
+        }
+        
         [TestMethod]
         public void HasReplayEventsMethod()
         {
