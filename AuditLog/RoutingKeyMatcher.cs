@@ -7,15 +7,18 @@ namespace AuditLog
     {
         public bool IsMatch(string criteriaRoutingKey, string entryRoutingKey)
         {
-            if (criteriaRoutingKey == null) {return true;}
-
-            var pattern = criteriaRoutingKey
-                .Replace(".#", ".*")
-                .Replace("#", "*");
+            if (criteriaRoutingKey != null)
+            {
+                var pattern = criteriaRoutingKey
+                    .Replace(".#", ".*")
+                    .Replace("#", "*");
             
-            var regex = new Regex($"^{pattern}$");
+                var regex = new Regex($"^{pattern}$");
 
-            return regex.IsMatch(entryRoutingKey);
+                return regex.IsMatch(entryRoutingKey);
+            }
+
+            return true;
         }
     }
 }
