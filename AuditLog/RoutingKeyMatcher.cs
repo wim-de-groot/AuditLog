@@ -7,7 +7,7 @@ namespace AuditLog
     {
         public bool IsMatch(string criteriaRoutingKey, string entryRoutingKey)
         {
-            if (criteriaRoutingKey == null) return true;
+            if (criteriaRoutingKey == null) {return true;}
 
             var pattern = criteriaRoutingKey
                 .Replace(".#", ".*")

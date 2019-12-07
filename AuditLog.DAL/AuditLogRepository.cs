@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using AuditLog.Abstractions;
 using AuditLog.Domain;
 
@@ -18,9 +17,9 @@ namespace AuditLog.DAL
 
         public IEnumerable<LogEntry> FindBy(LogEntryCriteria criteria) =>
             _context.LogEntries.Where(entry =>
-                (criteria.FromTimestamp == null || entry.Timestamp >= criteria.FromTimestamp) &&
-                (criteria.ToTimestamp == null || entry.Timestamp <= criteria.ToTimestamp) &&
-                (criteria.EventType == null || entry.EventType == criteria.EventType)
+                IsNullOrGreaterOrEqualsThen(criteria.FromTimestamp, entry.Timestamp) &&
+                IsNullOrSmallerOrEqualsThen(criteria.ToTimestamp, entry.Timestamp) &&
+                IsNullOrEqualsTo(criteria.EventType, entry.EventType)
             );
 
         public void Create(LogEntry entity)
@@ -28,5 +27,14 @@ namespace AuditLog.DAL
             _context.LogEntries.Add(entity);
             _context.SaveChanges();
         }
+
+        private static bool IsNullOrGreaterOrEqualsThen(long? criteriaTimestamp, long entryTimestamp) =>
+            criteriaTimestamp == null || entryTimestamp >= criteriaTimestamp;
+
+        private static bool IsNullOrSmallerOrEqualsThen(long? criteriaTimestamp, long entryTimestamp) =>
+            criteriaTimestamp == null || entryTimestamp <= criteriaTimestamp;
+
+        private static bool IsNullOrEqualsTo(string criteriaValue, string entryValue) =>
+            criteriaValue == null || entryValue == criteriaValue;
     }
 }
