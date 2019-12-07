@@ -1,6 +1,7 @@
 using System.Linq;
 using AuditLog.Abstractions;
 using AuditLog.Domain;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Minor.Miffy.MicroServices.Events;
 
@@ -48,11 +49,11 @@ namespace AuditLog
             catch
             {
                 _logger.LogError("Internal error occured");
-                return new ReplayEventsResponse {Code = 500, Status = "Internal Error"};
+                return new ReplayEventsResponse {Code = StatusCodes.Status500InternalServerError, Status = "Internal Error"};
             }
 
             _logger.LogTrace("Sending response");
-            return new ReplayEventsResponse {Code = 200, Status = "OK"};
+            return new ReplayEventsResponse {Code = StatusCodes.Status200OK, Status = "OK"};
         }
     }
 }
