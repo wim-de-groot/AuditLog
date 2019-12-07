@@ -18,10 +18,7 @@ namespace AuditLog.ConsoleClient
         private static readonly ManualResetEvent _stopEvent = new ManualResetEvent(false);
         public static void Main(string[] args)
         {
-            using var loggerFactory = LoggerFactory.Create(configure =>
-            {
-                configure.AddConsole().SetMinimumLevel(LogLevel.Debug);
-            });
+            using var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug));
 
             MiffyLoggerFactory.LoggerFactory = loggerFactory;
 
