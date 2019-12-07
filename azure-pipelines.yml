@@ -94,6 +94,7 @@ stages:
               containerRegistry: 'wimdegroot'
               repository: 'audit-log'
               tags: $(Build.BuildId)
+              buildContext: 'AuditLog.ConsoleClient/'
               Dockerfile: 'AuditLog.ConsoleClient/Dockerfile'
 
           
