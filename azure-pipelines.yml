@@ -92,7 +92,7 @@ stages:
             displayName: 'docker build and publish'
             inputs:
               containerRegistry: 'wimdegroot'
-              repository: 'audit-log'
+              repository: 'wimdegroot/audit-log'
               tags: $(Build.BuildId)
               buildContext: 'AuditLog.ConsoleClient/'
               Dockerfile: 'AuditLog.ConsoleClient/Dockerfile'
