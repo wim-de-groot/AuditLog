@@ -17,6 +17,7 @@ namespace AuditLog.ConsoleClient
     {
         private static readonly ManualResetEvent _stopEvent = new ManualResetEvent(false);
 
+        [ExcludeFromCodeCoverage]
         public static void Main(string[] args)
         {
             using var loggerFactory =

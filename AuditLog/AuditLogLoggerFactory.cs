@@ -9,6 +9,8 @@ namespace AuditLog
     public static class AuditLogLoggerFactory
     {
         private static ILoggerFactory _loggerFactory = new NullLoggerFactory();
+        
+        [ExcludeFromCodeCoverage]
         public static ILoggerFactory LoggerFactory
         {
             internal get => _loggerFactory;
