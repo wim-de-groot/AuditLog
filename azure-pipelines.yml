@@ -89,6 +89,11 @@ stages:
               modifyOutputPath: false
 
           - task: Docker@2
+            inputs:
+              containerRegistry: 'wimdegroot'
+              command: 'login'
+
+          - task: Docker@2
             displayName: 'docker build and publish'
             inputs:
               containerRegistry: 'wimdegroot'
