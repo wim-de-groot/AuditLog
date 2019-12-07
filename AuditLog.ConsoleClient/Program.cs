@@ -21,7 +21,7 @@ namespace AuditLog.ConsoleClient
         public static void Main(string[] args)
         {
             using var loggerFactory =
-                LoggerFactory.Create(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Trace));
+                LoggerFactory.Create(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug));
 
             MiffyLoggerFactory.LoggerFactory = loggerFactory;
 
