@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace AuditLog.Domain
 {
+    [ExcludeFromCodeCoverage]
     public class LogEntryCriteria
     {
         public long? FromTimestamp { get; set; }

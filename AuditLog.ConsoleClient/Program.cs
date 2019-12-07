@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using AuditLog.Abstractions;
 using AuditLog.DAL;
@@ -11,6 +12,7 @@ using Minor.Miffy.RabbitMQBus;
 
 namespace AuditLog.ConsoleClient
 {
+    [ExcludeFromCodeCoverage]
     public static class Program
     {
         private static readonly ManualResetEvent _stopEvent = new ManualResetEvent(false);

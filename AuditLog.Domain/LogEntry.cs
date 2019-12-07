@@ -1,5 +1,8 @@
-﻿namespace AuditLog.Domain
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace AuditLog.Domain
 {
+    [ExcludeFromCodeCoverage]
     public class LogEntry
     {
         public long Id { get; set; }
