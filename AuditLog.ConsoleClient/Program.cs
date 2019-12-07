@@ -16,12 +16,12 @@ namespace AuditLog.ConsoleClient
     public static class Program
     {
         private static readonly ManualResetEvent _stopEvent = new ManualResetEvent(false);
-
-        [ExcludeFromCodeCoverage]
         public static void Main(string[] args)
         {
-            using var loggerFactory =
-                LoggerFactory.Create(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug));
+            using var loggerFactory = LoggerFactory.Create(configure =>
+            {
+                configure.AddConsole().SetMinimumLevel(LogLevel.Debug);
+            });
 
             MiffyLoggerFactory.LoggerFactory = loggerFactory;
 
