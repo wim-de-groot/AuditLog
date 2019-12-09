@@ -4,6 +4,7 @@ using System.Threading;
 using AuditLog.Abstractions;
 using AuditLog.DAL;
 using AuditLog.Domain;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Minor.Miffy;
@@ -16,9 +17,10 @@ namespace AuditLog.ConsoleClient
     public static class Program
     {
         private static readonly ManualResetEvent _stopEvent = new ManualResetEvent(false);
+
         public static void Main(string[] args)
         {
-            using var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug));
+            var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug));
 
             MiffyLoggerFactory.LoggerFactory = loggerFactory;
 
@@ -30,23 +32,23 @@ namespace AuditLog.ConsoleClient
 
             try
             {
-                var exchangeName = Environment.GetEnvironmentVariable("EXCHANGE_NAME") ?? "Default";
-
-                var rabbitMqConnectionString = Environment.GetEnvironmentVariable("RMQ_CONNECTIONSTRING") ??
-                                               "amqp://guest:guest@localhost";
+                var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
+                                       "server=localhost;uid=root;pwd=root;database=AuditLogDB";
 
                 var contextBuilder = new RabbitMqContextBuilder()
-                    .WithExchange(exchangeName)
-                    .WithConnectionString(rabbitMqConnectionString);
+                    .ReadFromEnvironmentVariables();
 
-                using var context = contextBuilder.CreateContext();
+                using var context = contextBuilder
+                    .CreateContext();
 
                 var builder = new MicroserviceHostBuilder()
                     .WithBusContext(context)
                     .SetLoggerFactory(loggerFactory)
                     .RegisterDependencies(services =>
                     {
-                        services.AddDbContext<AuditLogContext>();
+                        services.AddDbContext<AuditLogContext>(optionsBuilder => optionsBuilder
+                            .UseMySql(connectionString)
+                            .UseLoggerFactory(loggerFactory));
                         services.AddTransient<IAuditLogRepository<LogEntry, long>, AuditLogRepository>();
                         services.AddTransient<IEventReplayer, EventReplayer>();
                         services.AddTransient<IRoutingKeyMatcher, RoutingKeyMatcher>();
@@ -56,7 +58,7 @@ namespace AuditLog.ConsoleClient
                 using var host = builder.CreateHost();
 
                 host.Start();
-                
+
                 logger.LogTrace("Host started, audit logger ready to log");
 
                 _stopEvent.WaitOne();
