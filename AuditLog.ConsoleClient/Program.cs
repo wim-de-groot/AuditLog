@@ -65,7 +65,7 @@ namespace AuditLog.ConsoleClient
             }
             catch (Exception e)
             {
-                logger.LogError($"Error occured while starting client with message: {e.Message}");
+                logger.LogError($"Error occured while running the client with message: {e.Message}");
             }
         }
     }
