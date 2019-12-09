@@ -107,7 +107,7 @@ namespace AuditLog.Test
         public void HandleCallsCreateOnRepository()
         {
             // Arrange
-            const string message = "{'timestamp': 800000, 'routingKey': 'Miffy.*', 'eventType': 'DomainEvent', 'eventJson': ''}";
+            const string message = "{'timestamp': 800000, 'routingKey': 'Miffy.*', 'eventType': 'DomainEvent', 'eventJson': '{\"title\": \"Something\", \"number\": 6}'}";
             
             var repositoryMock = new Mock<IAuditLogRepository<LogEntry, long>>();
             var repository = repositoryMock.Object;
