@@ -42,7 +42,7 @@ namespace AuditLog.Test
                 EventType = "DomainEvent",
                 RoutingKey = "Test.*",
                 Timestamp = new DateTime(2019, 7, 6).Ticks
-            });
+            }, "ReplayEventsQueue");
             
             // Assert
             channelMock.Verify(mock => mock.CreateBasicProperties());
@@ -70,13 +70,13 @@ namespace AuditLog.Test
                 EventType = "DomainEvent",
                 RoutingKey = "Test.*",
                 Timestamp = new DateTime(2019, 7, 6).Ticks
-            });
+            }, "ReplayEventsQueue");
             
             // Assert
             channelMock.Verify(mock => mock
                 .BasicPublish(
-                    "TestExchange", 
-                    "Test.*", 
+                    string.Empty, 
+                    "ReplayEventsQueue", 
                     false,
                     properties, 
                     It.IsAny<byte[]>())
@@ -91,6 +91,7 @@ namespace AuditLog.Test
             long timestamp = 0;
             var key = "";
             var type = "";
+            var queueName = "";
             byte[] buffer = null;
             
             var properties = new BasicProperties();
@@ -104,8 +105,8 @@ namespace AuditLog.Test
             channelMock.Setup(mock => mock.CreateBasicProperties()).Returns(properties);
             channelMock.Setup(mock => mock
                     .BasicPublish(
-                        "TestExchange",
-                        "Test.*",
+                        string.Empty, 
+                        "ReplayEventsQueue",
                         false,
                         properties,
                         It.IsAny<byte[]>()))
@@ -132,12 +133,12 @@ namespace AuditLog.Test
                 EventType = "DomainEvent",
                 RoutingKey = "Test.*",
                 Timestamp = new DateTime(2019, 7, 6).Ticks
-            });
+            }, "ReplayEventsQueue");
             
             // Assert
-            Assert.AreEqual("TestExchange", exchangeName);
+            Assert.AreEqual(string.Empty, exchangeName);
             Assert.AreEqual("DomainEvent", type);
-            Assert.AreEqual("Test.*", key);
+            Assert.AreEqual("ReplayEventsQueue", key);
             Assert.AreEqual(new DateTime(2019, 7, 6).Ticks, timestamp);
             Assert.AreEqual("{'title': 'iets'}", Encoding.Unicode.GetString(buffer));
         }
@@ -175,13 +176,13 @@ namespace AuditLog.Test
                     RoutingKey = "Test.*",
                     Timestamp = new DateTime(2019, 7, 6).Ticks
                 }
-            });
+            }, "ReplayEventsQueue");
             
             // Assert
             channelMock.Verify(mock => mock
                 .BasicPublish(
-                    "TestExchange",
-                    "Test.*",
+                    string.Empty,
+                    "ReplayEventsQueue",
                     false,
                     properties,
                     It.IsAny<byte[]>()), Times.Exactly(2));

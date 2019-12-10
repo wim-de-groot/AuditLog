@@ -43,7 +43,7 @@ namespace AuditLog
                     .Where(entry => _routingKeyMatcher.IsMatch(criteria.RoutingKey, entry.RoutingKey)).ToList();
                 _logger.LogTrace($"Filtered log entries, which results in {logEntries.Count} log entries");
 
-                _eventReplayer.ReplayLogEntries(logEntries);
+                _eventReplayer.ReplayLogEntries(logEntries, command.ReplayQueue);
                 _logger.LogTrace($"Replayed {logEntries.Count} log entries");
             }
             catch
