@@ -89,7 +89,6 @@ namespace AuditLog.Test
             // Arrange
             var exchangeName = "";
             long timestamp = 0;
-            var key = "";
             var type = "";
             var queueName = "";
             byte[] buffer = null;
@@ -120,7 +119,7 @@ namespace AuditLog.Test
                 {
                     exchangeName = exchange;
                     timestamp = basicProperties.Timestamp.UnixTime;
-                    key = routingKey;
+                    queueName = routingKey;
                     type = basicProperties.Type;
                     buffer = body;
                 });
@@ -138,7 +137,7 @@ namespace AuditLog.Test
             // Assert
             Assert.AreEqual(string.Empty, exchangeName);
             Assert.AreEqual("DomainEvent", type);
-            Assert.AreEqual("ReplayEventsQueue", key);
+            Assert.AreEqual("ReplayEventsQueue", queueName);
             Assert.AreEqual(new DateTime(2019, 7, 6).Ticks, timestamp);
             Assert.AreEqual("{'title': 'iets'}", Encoding.Unicode.GetString(buffer));
         }
