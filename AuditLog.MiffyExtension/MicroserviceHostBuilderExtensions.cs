@@ -1,9 +1,8 @@
-﻿using System;
-using Minor.Miffy.MicroServices.Host;
+﻿using Minor.Miffy.MicroServices.Host;
 
 namespace AuditLog.MiffyExtension
 {
-    public static class MicroserviceHostBuilderExtension
+    public static class MicroserviceHostBuilderExtensions
     {
         public static MicroserviceHostBuilder WithAuditLogger(this MicroserviceHostBuilder builder)
         {

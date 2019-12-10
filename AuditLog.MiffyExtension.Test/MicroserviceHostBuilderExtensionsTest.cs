@@ -5,10 +5,10 @@ using Minor.Miffy.TestBus;
 namespace AuditLog.MiffyExtension.Test
 {
     [TestClass]
-    public class UnitTest1
+    public class MicroserviceHostBuilderExtensionsTest
     {
         [TestMethod]
-        public void TestMethod1()
+        public void WithAuditLoggerShouldInstantiate___OnStart()
         {
             // Arrange
             using var context = new TestBusContext();

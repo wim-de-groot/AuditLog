@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuditLog.MiffyExtension", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuditLog.MiffyExtension.Test", "AuditLog.MiffyExtension.Test\AuditLog.MiffyExtension.Test.csproj", "{11E6213B-1BEA-4B0B-A03B-6A811315120F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuditLog.MiffyExtension.Abstractions", "AuditLog.MiffyExtension.Abstractions\AuditLog.MiffyExtension.Abstractions.csproj", "{54BDB77A-4ED2-48BF-A250-21184CD16AAD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,5 +62,9 @@ Global
 		{11E6213B-1BEA-4B0B-A03B-6A811315120F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11E6213B-1BEA-4B0B-A03B-6A811315120F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11E6213B-1BEA-4B0B-A03B-6A811315120F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54BDB77A-4ED2-48BF-A250-21184CD16AAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54BDB77A-4ED2-48BF-A250-21184CD16AAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54BDB77A-4ED2-48BF-A250-21184CD16AAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54BDB77A-4ED2-48BF-A250-21184CD16AAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
