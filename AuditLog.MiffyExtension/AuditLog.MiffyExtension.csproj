@@ -20,4 +20,8 @@
       <PackageReference Include="MaartenH.Minor.Miffy.RabbitMQBus" Version="0.10.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\AuditLog.MiffyExtension.Abstractions\AuditLog.MiffyExtension.Abstractions.csproj" />
+    </ItemGroup>
+
 </Project>
