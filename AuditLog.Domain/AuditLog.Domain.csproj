@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MaartenH.Minor.Miffy.Microservices" Version="0.9.1" />
+      <PackageReference Include="MaartenH.Minor.Miffy.Microservices" Version="0.10.0" />
     </ItemGroup>
 
 </Project>
