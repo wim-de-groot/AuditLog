@@ -166,3 +166,4 @@ __pycache__/
 *.xsd.cs
 *.DS_Store
 .config/
+*.DotSettings
