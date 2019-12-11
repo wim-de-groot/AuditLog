@@ -18,10 +18,12 @@
       <PackageReference Include="MaartenH.Minor.Miffy.Abstractions" Version="1.3.1" />
       <PackageReference Include="MaartenH.Minor.Miffy.Microservices" Version="1.3.1" />
       <PackageReference Include="MaartenH.Minor.Miffy.RabbitMQBus" Version="1.3.1" />
+      <PackageReference Include="RabbitMQ.Client" Version="5.1.2" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\AuditLog.MiffyExtension.Abstractions\AuditLog.MiffyExtension.Abstractions.csproj" />
+      <ProjectReference Include="..\AuditLog\AuditLog.csproj" />
     </ItemGroup>
 
 </Project>

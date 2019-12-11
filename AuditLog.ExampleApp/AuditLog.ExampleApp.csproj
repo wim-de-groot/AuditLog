@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MaartenH.Minor.Miffy.RabbitMQBus" Version="1.3.1" />
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AuditLog.Abstractions\AuditLog.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>
