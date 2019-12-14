@@ -76,8 +76,8 @@ stages:
   - stage: Release
     displayName: Release
     jobs: 
-      - job: Release ConsoleClient
-        displayName: Release ConsoleClient
+      - job: Release_ConsoleClient
+        displayName: Release_ConsoleClient
         pool:
           vmImage: 'ubuntu-latest'
         steps:
@@ -101,8 +101,8 @@ stages:
               buildContext: 'AuditLog.ConsoleClient/'
               Dockerfile: 'AuditLog.ConsoleClient/Dockerfile'
 
-      - job: Release WebApi
-        displayName: Release WebApi
+      - job: Release_WebApi
+        displayName: Release_WebApi
         pool:
           vmImage: 'ubuntu-latest'
         steps:
