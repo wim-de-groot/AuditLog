@@ -34,14 +34,12 @@ namespace AuditLog.ConsoleClient
             {
                 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
                                        "server=localhost;uid=root;pwd=root;database=AuditLogDB";
-
-                var contextBuilder = new RabbitMqContextBuilder()
-                    .ReadFromEnvironmentVariables();
-
-                using var context = contextBuilder
+                
+                using var context = new RabbitMqContextBuilder()
+                    .ReadFromEnvironmentVariables()
                     .CreateContext();
 
-                var builder = new MicroserviceHostBuilder()
+                using var host = new MicroserviceHostBuilder()
                     .WithBusContext(context)
                     .SetLoggerFactory(loggerFactory)
                     .RegisterDependencies(services =>
@@ -53,10 +51,9 @@ namespace AuditLog.ConsoleClient
                         services.AddTransient<IEventReplayer, EventReplayer>();
                         services.AddTransient<IRoutingKeyMatcher, RoutingKeyMatcher>();
                     })
-                    .UseConventions();
-
-                using var host = builder.CreateHost();
-
+                    .UseConventions()
+                    .CreateHost();
+                
                 host.Start();
 
                 logger.LogTrace("Host started, audit logger ready to log");

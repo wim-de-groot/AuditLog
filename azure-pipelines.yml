@@ -12,6 +12,8 @@ trigger:
       - AuditLog.DAL.Test/
       - AuditLog.Domain/
       - AuditLog.Test/
+      - AuditLog.WebApi/
+      - AuditLog.WebApi.Test/
       - azure-pipelines.yaml
 
 
@@ -22,9 +24,11 @@ variables:
     AuditLog.DAL/AuditLog.DAL.csproj
     AuditLog.Domain/AuditLog.Domain.csproj
     AuditLog.ConsoleClient/AuditLog.ConsoleClient.csproj
+    AuditLog.WebApi.csproj
   testProjects: |
     AuditLog.Test/AuditLog.Test.csproj
     AuditLog.DAL.Test/AuditLog.DAL.Test.csproj
+    AuditLog.WebApi.Test.csproj
   projectKey: WimG:AudiLog
   projectName: Wim de Groot AuditLog
 
@@ -72,8 +76,8 @@ stages:
   - stage: Release
     displayName: Release
     jobs: 
-      - job: Release
-        displayName: Release
+      - job: Release ConsoleClient
+        displayName: Release ConsoleClient
         pool:
           vmImage: 'ubuntu-latest'
         steps:
@@ -96,5 +100,30 @@ stages:
               tags: $(Build.BuildId)
               buildContext: 'AuditLog.ConsoleClient/'
               Dockerfile: 'AuditLog.ConsoleClient/Dockerfile'
+
+      - job: Release WebApi
+        displayName: Release WebApi
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet publish'
+            inputs:
+              command: publish
+              publishWebProjects: false
+              projects: AuditLog.WebApi/AuditLog.WebApi.csproj
+              arguments: '--configuration Release --self-contained -f "netcoreapp3.0" -r "linux-x64" --output "AuditLog.WebApi/obj/docker/publish"'
+              patchVersion: $(Build.BuildId)
+              zipAfterPublish: false
+              modifyOutputPath: false
+
+          - task: Docker@2
+            displayName: 'docker build and publish'
+            inputs:
+              containerRegistry: 'wimdegroot'
+              repository: 'wimdegroot/audit-log'
+              tags: $(Build.BuildId)-management
+              buildContext: 'AuditLog.WebApi/'
+              Dockerfile: 'AuditLog.WebApi/Dockerfile'
 
           
