@@ -14,6 +14,7 @@ trigger:
       - AuditLog.Test/
       - AuditLog.WebApi/
       - AuditLog.WebApi.Test/
+      - AuditLog.MiffyExtensions.Abstractions/
       - azure-pipelines.yaml
 
 
@@ -25,6 +26,7 @@ variables:
     AuditLog.Domain/AuditLog.Domain.csproj
     AuditLog.ConsoleClient/AuditLog.ConsoleClient.csproj
     AuditLog.WebApi.csproj
+    AuditLog.MiffyExtensions.Abstractions.csproj
   testProjects: |
     AuditLog.Test/AuditLog.Test.csproj
     AuditLog.DAL.Test/AuditLog.DAL.Test.csproj
