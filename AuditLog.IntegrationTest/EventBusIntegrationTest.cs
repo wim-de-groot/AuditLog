@@ -29,7 +29,7 @@ namespace AuditLog.IntegrationTest
             Environment.SetEnvironmentVariable("PORT", "5672");
             Environment.SetEnvironmentVariable("USERNAME", "Guest");
             Environment.SetEnvironmentVariable("PASSWORD", "Guest");
-            Environment.SetEnvironmentVariable("EXCHANGE_NAME", "TestExchangeName");
+            Environment.SetEnvironmentVariable("EXCHANGE_NAME", "TestExchange");
             _connection = new SqliteConnection("DataSource=:memory:");
             _connection.Open();
 
@@ -101,7 +101,7 @@ namespace AuditLog.IntegrationTest
             var basicProperties = eventBus.Model.CreateBasicProperties();
             basicProperties.Type = "EventMessage";
             basicProperties.Timestamp = new AmqpTimestamp(new DateTime(2019, 5, 3).Ticks);
-            eventBus.Model.BasicPublish("TestExchangeName", "Test.Test.#", false, basicProperties, body);
+            eventBus.Model.BasicPublish("TestExchange", "Test.Test.#", false, basicProperties, body);
         }
     }
 
