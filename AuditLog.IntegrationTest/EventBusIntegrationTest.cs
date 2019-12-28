@@ -48,6 +48,19 @@ namespace AuditLog.IntegrationTest
         }
 
         [TestMethod]
+        public void METHOD()
+        {
+            // Arrange
+            var builder = new EventBusBuilder().FromEnvironment();
+
+            // Act
+            var eventBus = builder.CreateEventBus();
+            
+            // Assert
+            Assert.IsInstanceOfType(eventBus, typeof(IEventBus));
+        }
+
+        [TestMethod]
         public void HandleShouldBeCalledWhenMessageIsSend()
         {
             // Arrange
@@ -90,6 +103,7 @@ namespace AuditLog.IntegrationTest
             using (var context = new AuditLogContext(_options))
             {
                 Assert.AreEqual(1, context.LogEntries.Count());
+                Assert.IsTrue(context.LogEntries.Any(entry => entry.EventJson.Contains("Hello world")));
             }
         }
 
