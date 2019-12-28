@@ -5,7 +5,7 @@ namespace AuditLog.Abstractions
 {
     public interface IEventReplayer
     {
-        void ReplayLogEntries(IEnumerable<LogEntry> logEntries, string replayQueue);
-        void ReplayLogEntry(LogEntry logEntry, string replayQueue);
+        void ReplayLogEntries(IEnumerable<LogEntry> logEntries);
+        void ReplayLogEntry(LogEntry logEntry);
     }
 }

@@ -42,7 +42,7 @@ namespace AuditLog.Test
                 EventType = "DomainEvent",
                 RoutingKey = "Test.*",
                 Timestamp = new DateTime(2019, 7, 6).Ticks
-            }, "ReplayEventsQueue");
+            });
             
             // Assert
             channelMock.Verify(mock => mock.CreateBasicProperties());
@@ -70,13 +70,13 @@ namespace AuditLog.Test
                 EventType = "DomainEvent",
                 RoutingKey = "Test.*",
                 Timestamp = new DateTime(2019, 7, 6).Ticks
-            }, "ReplayEventsQueue");
+            });
             
             // Assert
             channelMock.Verify(mock => mock
                 .BasicPublish(
                     string.Empty, 
-                    "ReplayEventsQueue", 
+                    "Replay.Test.*", 
                     false,
                     properties, 
                     It.IsAny<byte[]>())
@@ -105,7 +105,7 @@ namespace AuditLog.Test
             channelMock.Setup(mock => mock
                     .BasicPublish(
                         string.Empty, 
-                        "ReplayEventsQueue",
+                        "Replay.Test.*",
                         false,
                         properties,
                         It.IsAny<byte[]>()))
@@ -132,12 +132,12 @@ namespace AuditLog.Test
                 EventType = "DomainEvent",
                 RoutingKey = "Test.*",
                 Timestamp = new DateTime(2019, 7, 6).Ticks
-            }, "ReplayEventsQueue");
+            });
             
             // Assert
             Assert.AreEqual(string.Empty, exchangeName);
             Assert.AreEqual("DomainEvent", type);
-            Assert.AreEqual("ReplayEventsQueue", queueName);
+            Assert.AreEqual("Replay.Test.*", queueName);
             Assert.AreEqual(new DateTime(2019, 7, 6).Ticks, timestamp);
             Assert.AreEqual("{'title': 'iets'}", Encoding.Unicode.GetString(buffer));
         }
@@ -175,13 +175,13 @@ namespace AuditLog.Test
                     RoutingKey = "Test.*",
                     Timestamp = new DateTime(2019, 7, 6).Ticks
                 }
-            }, "ReplayEventsQueue");
+            });
             
             // Assert
             channelMock.Verify(mock => mock
                 .BasicPublish(
                     string.Empty,
-                    "ReplayEventsQueue",
+                    "Replay.Test.*",
                     false,
                     properties,
                     It.IsAny<byte[]>()), Times.Exactly(2));

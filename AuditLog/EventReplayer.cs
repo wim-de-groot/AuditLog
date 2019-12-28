@@ -18,15 +18,15 @@ namespace AuditLog
             _logger = AuditLogLoggerFactory.CreateInstance<EventReplayer>();
         }
 
-        public void ReplayLogEntries(IEnumerable<LogEntry> logEntries, string replayQueue)
+        public void ReplayLogEntries(IEnumerable<LogEntry> logEntries)
         {
             foreach (var logEntry in logEntries)
             {
-                ReplayLogEntry(logEntry, replayQueue);
+                ReplayLogEntry(logEntry);
             }
         }
 
-        public void ReplayLogEntry(LogEntry logEntry, string replayQueue)
+        public void ReplayLogEntry(LogEntry logEntry)
         {
             using var channel = _context.Connection.CreateModel();
             _logger.LogTrace("Opened channel");
@@ -43,7 +43,7 @@ namespace AuditLog
             
             channel.BasicPublish(
                 exchange: string.Empty,
-                routingKey: replayQueue,
+                routingKey: $"Replay.{logEntry.RoutingKey}",
                 basicProperties: properties,
                 body: body
                 );

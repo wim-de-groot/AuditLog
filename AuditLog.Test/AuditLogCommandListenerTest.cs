@@ -167,12 +167,11 @@ namespace AuditLog.Test
             commandListener.ReplayEvents(new ReplayEventsCommand
             {
                 EventType = "DomainEvent",
-                RoutingKey = "Test.*",
-                ReplayQueue = "ReplayEventQueue"
+                RoutingKey = "Test.*"
             });
             
             // Assert
-            eventReplayerMock.Verify(mock => mock.ReplayLogEntries(It.IsAny<IEnumerable<LogEntry>>(), "ReplayEventQueue"));
+            eventReplayerMock.Verify(mock => mock.ReplayLogEntries(It.IsAny<IEnumerable<LogEntry>>()));
         }
 
         [TestMethod]
