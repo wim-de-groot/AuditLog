@@ -14,6 +14,7 @@ trigger:
       - AuditLog.Test/
       - AuditLog.WebApi/
       - AuditLog.WebApi.Test/
+      - AuditLog.IntegrationTest/
       - azure-pipelines.yaml
 
 
@@ -29,6 +30,8 @@ variables:
     AuditLog.Test/AuditLog.Test.csproj
     AuditLog.DAL.Test/AuditLog.DAL.Test.csproj
     AuditLog.WebApi.Test.csproj
+  integrationTestProjects: |
+    AuditLog.IntegrationTest/AuditLog.IntegrationTest.csproj
   projectKey: WimG:AudiLog
   projectName: Wim de Groot AuditLog
 
@@ -72,7 +75,24 @@ stages:
             condition: eq(variables['build.sourcebranch'], 'refs/heads/master')
             inputs:
               SonarQube: 'SonarQube Service Connection'
-
+  - stage: Integration
+    displayName: Integration Tests
+    dependsOn: Build
+    jobs:
+      - job: Integration
+        displayName: Integration Tests
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - bash: |
+              docker run -d -p 5672:5672 --name rabbitmq rabbitmq:3-alpine
+            displayName: 'docker run rabbitmq'
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet test'
+            inputs:
+              command: test
+              projects: $(integrationTestProjects)
+              arguments: '--configuration $(BuildConfiguration)'
   - stage: Release
     displayName: Release
     jobs: 
