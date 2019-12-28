@@ -10,7 +10,6 @@ namespace AuditLog.Abstractions
         string Password { get; }
         string ExchangeName { get; }
         IEventBusBuilder FromEnvironment();
-        IEventBus CreateEventBus(IConnectionFactory factory);
-        IEventBus CreateEventBus();
+        IEventBus CreateEventBus(IConnectionFactory factory); 
     }
 }

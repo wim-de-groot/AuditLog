@@ -30,7 +30,5 @@ namespace AuditLog
             
             return new EventBus(connection, ExchangeName);
         }
-
-        public IEventBus CreateEventBus() => CreateEventBus(new ConnectionFactory());
     }
 }

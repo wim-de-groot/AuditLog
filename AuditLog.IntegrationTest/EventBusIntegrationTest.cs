@@ -48,26 +48,13 @@ namespace AuditLog.IntegrationTest
         }
 
         [TestMethod]
-        public void METHOD()
-        {
-            // Arrange
-            var builder = new EventBusBuilder().FromEnvironment();
-
-            // Act
-            var eventBus = builder.CreateEventBus();
-            
-            // Assert
-            Assert.IsInstanceOfType(eventBus, typeof(IEventBus));
-        }
-
-        [TestMethod]
         public void HandleShouldBeCalledWhenMessageIsSend()
         {
             // Arrange
             var eventListenerMock = new Mock<IEventListener>();
             using var eventBus = new EventBusBuilder()
                 .FromEnvironment()
-                .CreateEventBus()
+                .CreateEventBus(new ConnectionFactory())
                 .AddEventListener(eventListenerMock.Object, "#");
             var awaitHandle = new ManualResetEvent(false);
 
@@ -89,7 +76,7 @@ namespace AuditLog.IntegrationTest
                 var eventListener = new AuditLogEventListener(repository);
                 using var eventBus = new EventBusBuilder()
                     .FromEnvironment()
-                    .CreateEventBus()
+                    .CreateEventBus(new ConnectionFactory())
                     .AddEventListener(eventListener, "#");
 
                 var awaitHandle = new ManualResetEvent(false);
