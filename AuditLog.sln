@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuditLog.WebApi", "AuditLog
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuditLog.WebApi.Test", "AuditLog.WebApi.Test\AuditLog.WebApi.Test.csproj", "{B68FA61C-CABC-44B6-BA6A-53043CA73C80}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuditLog.IntegrationTest", "AuditLog.IntegrationTest\AuditLog.IntegrationTest.csproj", "{EE34B2FD-A7F8-4868-8AAB-84390B835EAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,5 +62,9 @@ Global
 		{B68FA61C-CABC-44B6-BA6A-53043CA73C80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B68FA61C-CABC-44B6-BA6A-53043CA73C80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B68FA61C-CABC-44B6-BA6A-53043CA73C80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE34B2FD-A7F8-4868-8AAB-84390B835EAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE34B2FD-A7F8-4868-8AAB-84390B835EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE34B2FD-A7F8-4868-8AAB-84390B835EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE34B2FD-A7F8-4868-8AAB-84390B835EAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
