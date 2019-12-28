@@ -14,8 +14,11 @@ namespace AuditLog.Test
         public void InstanceShouldBeCreatingModel()
         {
             // Arrange
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
             var connectionMock = new Mock<IConnection>();
             var connection = connectionMock.Object;
+            connectionMock.Setup(mock => mock.CreateModel()).Returns(model);
 
             // Act
             using var eventBus = new EventBus(connection, "TestExchange");

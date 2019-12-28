@@ -1,3 +1,4 @@
+using System;
 using AuditLog.Abstractions;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -6,6 +7,8 @@ namespace AuditLog
 {
     public class EventBus : IEventBus
     {
+        private bool _disposed;
+
         public EventBus(IConnection connection, string exchangeName)
         {
             Connection = connection;
@@ -30,9 +33,22 @@ namespace AuditLog
         }
 
         public void Dispose()
+        { 
+            Dispose(true);
+            GC.SuppressFinalize(this);           
+        }
+   
+        private void Dispose(bool disposing)
         {
-            Model?.Dispose();
-            Connection?.Dispose();
+            if (_disposed)
+                return; 
+      
+            if (disposing) {
+                Model.Dispose();
+                Connection.Dispose();
+            }
+      
+            _disposed = true;
         }
     }
 }
