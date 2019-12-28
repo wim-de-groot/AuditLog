@@ -41,7 +41,9 @@ namespace AuditLog
         protected virtual void Dispose(bool disposing)
         {
             if (_disposed)
-                return; 
+            {
+                return;
+            }
       
             if (disposing) {
                 Model.Dispose();
