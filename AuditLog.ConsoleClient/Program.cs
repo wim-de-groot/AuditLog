@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Minor.Miffy;
 using Minor.Miffy.MicroServices.Host;
 using Minor.Miffy.RabbitMQBus;
+using RabbitMQ.Client;
 
 namespace AuditLog.ConsoleClient
 {
@@ -35,27 +36,17 @@ namespace AuditLog.ConsoleClient
                 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
                                        "server=localhost;uid=root;pwd=root;database=AuditLogDB";
                 
-                using var context = new RabbitMqContextBuilder()
-                    .ReadFromEnvironmentVariables()
-                    .CreateContext();
-
-                using var host = new MicroserviceHostBuilder()
-                    .WithBusContext(context)
-                    .SetLoggerFactory(loggerFactory)
-                    .RegisterDependencies(services =>
-                    {
-                        services.AddDbContext<AuditLogContext>(optionsBuilder => optionsBuilder
-                            .UseMySql(connectionString)
-                            .UseLoggerFactory(loggerFactory));
-                        services.AddTransient<IAuditLogRepository<LogEntry, long>, AuditLogRepository>();
-                        services.AddTransient<IEventReplayer, EventReplayer>();
-                        services.AddTransient<IRoutingKeyMatcher, RoutingKeyMatcher>();
-                    })
-                    .UseConventions()
-                    .CreateHost();
+                var options = new DbContextOptionsBuilder<AuditLogContext>()
+                    .UseMySql(connectionString)
+                    .Options;
+                using var context = new AuditLogContext(options);
+                var repository = new AuditLogRepository(context);
+                var eventListener = new AuditLogEventListener(repository);
+                using var eventBus = new EventBusBuilder()
+                    .FromEnvironment()
+                    .CreateEventBus(new ConnectionFactory())
+                    .AddEventListener(eventListener, "#");
                 
-                host.Start();
-
                 logger.LogTrace("Host started, audit logger ready to log");
 
                 _stopEvent.WaitOne();
