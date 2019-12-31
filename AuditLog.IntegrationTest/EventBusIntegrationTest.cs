@@ -48,7 +48,7 @@ namespace AuditLog.IntegrationTest
         }
 
         [TestMethod]
-        public void HandleShouldBeCalledWhenMessageIsSend()
+        public void HandleShouldBeCalledOnEventListenerWhenMessageIsSend()
         {
             // Arrange
             var eventListenerMock = new Mock<IEventListener>();
@@ -93,20 +93,50 @@ namespace AuditLog.IntegrationTest
                 Assert.IsTrue(context.LogEntries.Any(entry => entry.EventJson.Contains("Hello world")));
             }
         }
-
-        private void PublishMessage(IEventBus eventBus)
+        
+        [TestMethod]
+        public void HandleShouldBeCalledOnCommandHandlerWhenMessageIsSend()
         {
-            var message = new EventMessage {Text = "Hello world"};
+            // Arrange
+            var commandListenerMock = new Mock<ICommandListener>();
+            using var eventBus = new EventBusBuilder()
+                .FromEnvironment()
+                .CreateEventBus(new ConnectionFactory())
+                .AddCommandListener(commandListenerMock.Object, "TestQueue");
+            var awaitHandle = new ManualResetEvent(false);
+
+            // Act
+            PublishCommand(eventBus);
+            awaitHandle.WaitOne(1000);
+
+            // Assert
+            commandListenerMock.Verify(mock => mock.Handle(It.IsAny<object>(), It.IsAny<BasicDeliverEventArgs>()));
+        }
+
+        private static void PublishMessage(IEventBus eventBus)
+        {
+            var message = new Message {Text = "Hello world"};
             var json = JsonConvert.SerializeObject(message);
             var body = Encoding.UTF8.GetBytes(json);
             var basicProperties = eventBus.Model.CreateBasicProperties();
-            basicProperties.Type = "EventMessage";
+            basicProperties.Type = "Message";
             basicProperties.Timestamp = new AmqpTimestamp(new DateTime(2019, 5, 3).Ticks);
             eventBus.Model.BasicPublish("TestExchange", "Test.Test.#", false, basicProperties, body);
         }
+        
+        private static void PublishCommand(IEventBus eventBus)
+        {
+            var message = new Message {Text = "Hello world"};
+            var json = JsonConvert.SerializeObject(message);
+            var body = Encoding.UTF8.GetBytes(json);
+            var basicProperties = eventBus.Model.CreateBasicProperties();
+            basicProperties.Type = "Message";
+            basicProperties.Timestamp = new AmqpTimestamp(new DateTime(2019, 5, 3).Ticks);
+            eventBus.Model.BasicPublish("", "TestQueue", false, basicProperties, body);
+        }
     }
 
-    internal class EventMessage
+    internal class Message
     {
         public string Text { get; set; }
     }

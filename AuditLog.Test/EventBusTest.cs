@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AuditLog.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -125,7 +126,7 @@ namespace AuditLog.Test
         }
 
         [TestMethod]
-        public void AddEventListenerShould()
+        public void AddEventListenerShouldHaveBasicConsumer()
         {
             // Arrange
             IBasicConsumer basicConsumer = null;
@@ -154,6 +155,114 @@ namespace AuditLog.Test
             
             // Act
             eventBus.AddEventListener(eventListener, "#");
+            
+            // Assert
+            Assert.IsNotNull(basicConsumer);
+        }
+
+        [TestMethod]
+        public void AddCommandListenerShouldCallQueueDeclare()
+        {
+            // Arrange
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            var connectionMock = new Mock<IConnection>();
+            var connection = connectionMock.Object;
+            connectionMock.Setup(mock => mock.CreateModel()).Returns(model);
+            modelMock.Setup(mock => mock.QueueDeclare(string.Empty, false, true, true, null))
+                .Returns(new QueueDeclareOk("TestQueue", 0, 1));
+            using var eventBus = new EventBus(connection, "TestExchange");
+            
+            // Act
+            eventBus.AddCommandListener(new Mock<ICommandListener>().Object, "TestQueue");
+            
+            // Assert
+            modelMock.Verify(mock => mock.QueueDeclare("TestQueue", true, false, false, null));
+        }
+        
+        [TestMethod]
+        public void AddCommandListenerShouldCallBasicConsume()
+        {
+            // Arrange
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            var connectionMock = new Mock<IConnection>();
+            var connection = connectionMock.Object;
+            connectionMock.Setup(mock => mock.CreateModel()).Returns(model);
+            modelMock.Setup(mock => mock.QueueDeclare(string.Empty, false, true, true, null))
+                .Returns(new QueueDeclareOk("TestQueue", 0, 1));
+            using var eventBus = new EventBus(connection, "TestExchange");
+
+            // Act
+            eventBus.AddCommandListener(new Mock<ICommandListener>().Object, "TestQueue");
+
+            // Assert
+            modelMock.Verify(mock =>
+                mock.BasicConsume("TestQueue", false, It.IsAny<string>(), false, false, null, It.IsAny<IBasicConsumer>()));
+        }
+
+        [TestMethod]
+        public void AddCommandListenerShouldCallBasicConsumeWithConsumerTagOfTypeGuid()
+        {
+            // Arrange
+            var consumerTagAsGuid = Guid.Empty;
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            var connectionMock = new Mock<IConnection>();
+            var connection = connectionMock.Object;
+            connectionMock.Setup(mock => mock.CreateModel()).Returns(model);
+            modelMock.Setup(mock => mock.QueueDeclare(string.Empty, false, true, true, null))
+                .Returns(new QueueDeclareOk("TestQueue", 0, 1));
+            modelMock.Setup(mock => mock.BasicConsume("TestQueue", false, It.IsAny<string>(), false, false, null, It.IsAny<IBasicConsumer>()))
+                .Callback((
+                    string queue,
+                    bool autoAck,
+                    string consumerTag,
+                    bool noLocal,
+                    bool exclusive,
+                    IDictionary<string, object> arguments,
+                    IBasicConsumer consumer) =>
+                {
+                    consumerTagAsGuid = new Guid(consumerTag);
+                });
+            using var eventBus = new EventBus(connection, "TestExchange");
+
+            // Act
+            eventBus.AddCommandListener(new Mock<ICommandListener>().Object, "TestQueue");
+
+            // Assert
+            Assert.AreNotEqual(Guid.Empty, consumerTagAsGuid);
+        }
+        
+        [TestMethod]
+        public void AddCommandListenerShouldHaveBasicConsumer()
+        {
+            // Arrange
+            IBasicConsumer basicConsumer = null;
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            var connectionMock = new Mock<IConnection>();
+            var connection = connectionMock.Object;
+            connectionMock.Setup(mock => mock.CreateModel()).Returns(model);
+            modelMock.Setup(mock => mock.QueueDeclare(string.Empty, false, true, true, null))
+                .Returns(new QueueDeclareOk("TestQueue", 0, 1));
+            modelMock.Setup(mock =>
+                    mock.BasicConsume("TestQueue", false, It.IsAny<string>(), false, false, null, It.IsAny<IBasicConsumer>()))
+                .Callback((
+                    string queue,
+                    bool autoAck,
+                    string consumerTag,
+                    bool noLocal,
+                    bool exclusive,
+                    IDictionary<string, object> arguments,
+                    IBasicConsumer consumer) =>
+                {
+                    basicConsumer = consumer;
+                });
+            using var eventBus = new EventBus(connection, "TestExchange");
+            
+            // Act
+            eventBus.AddCommandListener(new Mock<ICommandListener>().Object, "TestQueue");
             
             // Assert
             Assert.IsNotNull(basicConsumer);

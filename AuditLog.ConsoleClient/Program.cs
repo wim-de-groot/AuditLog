@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using AuditLog.Abstractions;
 using AuditLog.DAL;
-using AuditLog.Domain;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Minor.Miffy;
-using Minor.Miffy.MicroServices.Host;
 using Minor.Miffy.RabbitMQBus;
 using RabbitMQ.Client;
 

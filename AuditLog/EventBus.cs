@@ -32,6 +32,18 @@ namespace AuditLog
             return this;
         }
 
+        public IEventBus AddCommandListener(ICommandListener commandListener, string queueName)
+        {
+             Model.QueueDeclare(queueName, true, false, false, null);
+             
+             var consumer = new EventingBasicConsumer(Model);
+             consumer.Received += commandListener.Handle;
+
+             Model.BasicConsume(queueName, false, Guid.NewGuid().ToString(), false, false, null, consumer);
+                 
+             return this;
+        }
+
         public void Dispose()
         { 
             Dispose(true);
