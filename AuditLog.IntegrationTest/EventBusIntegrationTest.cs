@@ -103,11 +103,11 @@ namespace AuditLog.IntegrationTest
             using var eventBus = new EventBusBuilder()
                 .FromEnvironment()
                 .CreateEventBus(new ConnectionFactory())
-                .AddCommandListener(commandListenerMock.Object, "TestQueue");
+                .AddCommandListener(commandListenerMock.Object, "AuditLog");
             var awaitHandle = new ManualResetEvent(false);
 
             // Act
-            eventBus.PublishCommand(new Command());
+            eventBus.PublishCommand(new ReplayEventsCommand());
             awaitHandle.WaitOne(1000);
 
             // Assert
@@ -124,22 +124,11 @@ namespace AuditLog.IntegrationTest
             basicProperties.Timestamp = new AmqpTimestamp(new DateTime(2019, 5, 3).Ticks);
             eventBus.Model.BasicPublish("TestExchange", "Test.Test.#", false, basicProperties, body);
         }
-        
-        private static void PublishCommand(IEventBus eventBus)
-        {
-            var message = new Message {Text = "Hello world"};
-            var json = JsonConvert.SerializeObject(message);
-            var body = Encoding.UTF8.GetBytes(json);
-            var basicProperties = eventBus.Model.CreateBasicProperties();
-            basicProperties.Type = "Message";
-            basicProperties.Timestamp = new AmqpTimestamp(new DateTime(2019, 5, 3).Ticks);
-            eventBus.Model.BasicPublish("", "TestQueue", false, basicProperties, body);
-        }
     }
 
     internal class Command : DomainCommand
     {
-        public Command() : base("AuditLog") { }
+        public Command() : base("TestQueue") { }
     }
 
     internal class Message
