@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using AuditLog.Abstractions;
 using AuditLog.Domain;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -25,13 +26,13 @@ namespace AuditLog.Test
         {
             // Arrange
             var properties = new BasicProperties();
-            var busContextMock = new Mock<IBusContext<IConnection>>();
-            var busContext = busContextMock.Object;
             var channelMock = new Mock<IModel>();
             var channel = channelMock.Object;
-            var eventReplayer = new EventReplayer(busContext);
-            busContextMock.Setup(mock => mock.ExchangeName).Returns("TestExchange");
-            busContextMock.Setup(mock => mock.Connection.CreateModel()).Returns(channel);
+            var eventBusMock = new Mock<IEventBus>();
+            var eventBus = eventBusMock.Object;
+            var eventReplayer = new EventReplayer(eventBus);
+            eventBusMock.Setup(mock => mock.ExchangeName).Returns("TestExchange");
+            eventBusMock.Setup(mock => mock.Connection.CreateModel()).Returns(channel);
             channelMock.Setup(mock => mock.CreateBasicProperties()).Returns(properties);
 
             // Act
@@ -53,13 +54,13 @@ namespace AuditLog.Test
         {
             // Arrange
             var properties = new BasicProperties();
-            var busContextMock = new Mock<IBusContext<IConnection>>();
-            var busContext = busContextMock.Object;
             var channelMock = new Mock<IModel>();
             var channel = channelMock.Object;
-            var eventReplayer = new EventReplayer(busContext);
-            busContextMock.Setup(mock => mock.ExchangeName).Returns("TestExchange");
-            busContextMock.Setup(mock => mock.Connection.CreateModel()).Returns(channel);
+            var eventBusMock = new Mock<IEventBus>();
+            var eventBus = eventBusMock.Object;
+            var eventReplayer = new EventReplayer(eventBus);
+            eventBusMock.Setup(mock => mock.ExchangeName).Returns("TestExchange");
+            eventBusMock.Setup(mock => mock.Connection.CreateModel()).Returns(channel);
             channelMock.Setup(mock => mock.CreateBasicProperties()).Returns(properties);
             
             // Act
@@ -94,13 +95,13 @@ namespace AuditLog.Test
             byte[] buffer = null;
             
             var properties = new BasicProperties();
-            var busContextMock = new Mock<IBusContext<IConnection>>();
-            var busContext = busContextMock.Object;
             var channelMock = new Mock<IModel>();
             var channel = channelMock.Object;
-            var eventReplayer = new EventReplayer(busContext);
-            busContextMock.Setup(mock => mock.ExchangeName).Returns("TestExchange");
-            busContextMock.Setup(mock => mock.Connection.CreateModel()).Returns(channel);
+            var eventBusMock = new Mock<IEventBus>();
+            var eventBus = eventBusMock.Object;
+            var eventReplayer = new EventReplayer(eventBus);
+            eventBusMock.Setup(mock => mock.ExchangeName).Returns("TestExchange");
+            eventBusMock.Setup(mock => mock.Connection.CreateModel()).Returns(channel);
             channelMock.Setup(mock => mock.CreateBasicProperties()).Returns(properties);
             channelMock.Setup(mock => mock
                     .BasicPublish(
@@ -147,13 +148,13 @@ namespace AuditLog.Test
         {
             // Arrange
             var properties = new BasicProperties();
-            var busContextMock = new Mock<IBusContext<IConnection>>();
-            var busContext = busContextMock.Object;
             var channelMock = new Mock<IModel>();
             var channel = channelMock.Object;
-            var eventReplayer = new EventReplayer(busContext);
-            busContextMock.Setup(mock => mock.ExchangeName).Returns("TestExchange");
-            busContextMock.Setup(mock => mock.Connection.CreateModel()).Returns(channel);
+            var eventBusMock = new Mock<IEventBus>();
+            var eventBus = eventBusMock.Object;
+            var eventReplayer = new EventReplayer(eventBus);
+            eventBusMock.Setup(mock => mock.ExchangeName).Returns("TestExchange");
+            eventBusMock.Setup(mock => mock.Connection.CreateModel()).Returns(channel);
             channelMock.Setup(mock => mock.CreateBasicProperties()).Returns(properties);
             
             // Act

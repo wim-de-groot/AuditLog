@@ -3,18 +3,17 @@ using System.Text;
 using AuditLog.Abstractions;
 using AuditLog.Domain;
 using Microsoft.Extensions.Logging;
-using Minor.Miffy;
 using RabbitMQ.Client;
 
 namespace AuditLog
 {
     public class EventReplayer : IEventReplayer
     {
-        private readonly IBusContext<IConnection> _context;
+        private readonly IEventBus _eventBus;
         private readonly ILogger<EventReplayer> _logger;
-        public EventReplayer(IBusContext<IConnection> context)
+        public EventReplayer(IEventBus eventBus)
         {
-            _context = context;
+            _eventBus = eventBus;
             _logger = AuditLogLoggerFactory.CreateInstance<EventReplayer>();
         }
 
@@ -28,7 +27,7 @@ namespace AuditLog
 
         public void ReplayLogEntry(LogEntry logEntry)
         {
-            using var channel = _context.Connection.CreateModel();
+            using var channel = _eventBus.Connection.CreateModel();
             _logger.LogTrace("Opened channel");
 
             var properties = channel.CreateBasicProperties();

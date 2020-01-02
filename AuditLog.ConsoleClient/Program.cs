@@ -37,10 +37,14 @@ namespace AuditLog.ConsoleClient
                     .Options;
                 using var context = new AuditLogContext(options);
                 var repository = new AuditLogRepository(context);
+                var routingKeyMatcher = new RoutingKeyMatcher();
                 var eventListener = new AuditLogEventListener(repository);
                 var eventBusBuilder = new EventBusBuilder().FromEnvironment();
                 using var eventBus = eventBusBuilder.CreateEventBus(new ConnectionFactory());
+                var eventReplayer = new EventReplayer(eventBus);
+                var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
                 eventBus.AddEventListener(eventListener, "#");
+                eventBus.AddCommandListener(commandListener, "AuditLog");
                 
                 logger.LogTrace("Host started, audit logger ready to log");
 
