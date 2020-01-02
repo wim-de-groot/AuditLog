@@ -1,4 +1,5 @@
 using System;
+using AuditLog.Domain;
 using RabbitMQ.Client;
 
 namespace AuditLog.Abstractions
@@ -10,5 +11,6 @@ namespace AuditLog.Abstractions
         string ExchangeName { get; }
         IEventBus AddEventListener(IEventListener eventListener, string topic);
         IEventBus AddCommandListener(ICommandListener commandListener, string queueName);
+        void PublishCommand(DomainCommand command);
     }
 }

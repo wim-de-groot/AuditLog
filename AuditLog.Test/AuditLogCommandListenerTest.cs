@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using AuditLog.Abstractions;
 using AuditLog.Domain;
-using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Minor.Miffy.MicroServices.Events;
 using Moq;
+using Newtonsoft.Json;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using RabbitMQ.Client.Framing;
 
 namespace AuditLog.Test
 {
@@ -20,64 +22,9 @@ namespace AuditLog.Test
         {
             AuditLogLoggerFactory.LoggerFactory = NullLoggerFactory.Instance;
         }
-        
-        [TestMethod]
-        public void HasReplayEventsMethod()
-        {
-            // Arrange
-            var type = typeof(AuditLogCommandListener);
-            
-            // Act
-            var result = type.GetMethod("ReplayEvents");
 
-            // Assert
-            Assert.IsNotNull(result);
-        }
-        
         [TestMethod]
-        public void ReplayEventsMethodHasCommandListenerAttribute()
-        {
-            // Arrange
-            var attributes = typeof(AuditLogCommandListener)
-                .GetMethod("ReplayEvents")
-                ?.GetCustomAttributes(typeof(CommandListenerAttribute));
-
-            // Act
-            var result = attributes?.FirstOrDefault();
-            
-            // Assert
-            Assert.IsNotNull(result);
-        }
-        
-        [TestMethod]
-        public void CommandListenerAttributeHasQueueName()
-        {
-            // Arrange
-            var attributes = typeof(AuditLogCommandListener)
-                .GetMethod("ReplayEvents")
-                ?.GetCustomAttributes(typeof(CommandListenerAttribute));
-
-            // Act
-            var result = attributes?.FirstOrDefault() as CommandListenerAttribute;
-            
-            // Assert
-            Assert.AreEqual("AuditLog",result?.QueueName);
-        }
-        
-        [TestMethod]
-        public void ReplayEventsHasOneParameter()
-        {
-            // Arrange
-            var method = typeof(AuditLogCommandListener)
-                .GetMethod("ReplayEvents");
-
-            var result = method?.GetParameters();
-
-            Assert.AreEqual(1,result?.Length);
-        }
-        
-        [TestMethod]
-        public void ReplayEventsReturnsReplayEventsResponse()
+        public void ShouldImplementICommandListener()
         {
             // Arrange
             var eventReplayerMock = new Mock<IEventReplayer>();
@@ -86,39 +33,85 @@ namespace AuditLog.Test
             var eventReplayer = eventReplayerMock.Object;
             var routingKeyMatcherMock = new Mock<IRoutingKeyMatcher>();
             var routingKeyMatcher = routingKeyMatcherMock.Object;
-            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher);
+            var eventBusMock = new Mock<IEventBus>();
+            var eventBus = eventBusMock.Object;
             
             // Act
-            var result = commandListener.ReplayEvents(new ReplayEventsCommand
+            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
+            
+            // Assert
+            Assert.IsInstanceOfType(commandListener, typeof(ICommandListener));
+        }
+
+        [TestMethod]
+        public void ReplayEventsReturnsReplayEventsResponse()
+        {
+            // Arrange
+            var sender = new object();
+            var basicDeliverEventArgs = new BasicDeliverEventArgs
             {
-                EventType = "DomainEvent",
-                RoutingKey = "Test.*"
-            });
+                BasicProperties = new BasicProperties
+                {
+                    Type = "SomeCommand",
+                    Timestamp = new AmqpTimestamp(new DateTime(2019, 6, 4).Ticks),
+                },
+                Body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new ReplayEventsCommand
+                {
+                    EventType = "DomainEvent",
+                    RoutingKey = "Test.*"
+                })),
+                RoutingKey = "TestQueue"
+            };
+            var eventReplayerMock = new Mock<IEventReplayer>();
+            var repositoryMock = new Mock<IAuditLogRepository<LogEntry, long>>();
+            var repository = repositoryMock.Object;
+            var eventReplayer = eventReplayerMock.Object;
+            var routingKeyMatcherMock = new Mock<IRoutingKeyMatcher>();
+            var routingKeyMatcher = routingKeyMatcherMock.Object;
+            var eventBusMock = new Mock<IEventBus>();
+            var eventBus = eventBusMock.Object;
+            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
+            
+            // Act
+            commandListener.Handle(sender, basicDeliverEventArgs);
 
             // Assert
-            Assert.IsInstanceOfType(result, typeof(ReplayEventsResponse));
+            eventBusMock.Verify(mock => mock.PublishCommand(It.IsAny<ReplayEventsResponse>()));
         }
 
         [TestMethod]
         public void ReplayEventCallsFindByOnRepository()
         {
             // Arrange
+            var sender = new object();
+            var basicDeliverEventArgs = new BasicDeliverEventArgs
+            {
+                BasicProperties = new BasicProperties
+                {
+                    Type = "SomeCommand",
+                    Timestamp = new AmqpTimestamp(new DateTime(2019, 6, 4).Ticks),
+                },
+                Body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new ReplayEventsCommand
+                {
+                    EventType = "DomainEvent",
+                    RoutingKey = "Test.*"
+                })),
+                RoutingKey = "TestQueue"
+            };
             var eventReplayerMock = new Mock<IEventReplayer>();
             var repositoryMock = new Mock<IAuditLogRepository<LogEntry, long>>();
             var repository = repositoryMock.Object;
             var eventReplayer = eventReplayerMock.Object;
             var routingKeyMatcherMock = new Mock<IRoutingKeyMatcher>();
             var routingKeyMatcher = routingKeyMatcherMock.Object;
-            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher);
+            var eventBusMock = new Mock<IEventBus>();
+            var eventBus = eventBusMock.Object;
+            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
             
             // Act
-            commandListener.ReplayEvents(new ReplayEventsCommand
-            {
-                EventType = "DomainEvent",
-                RoutingKey = "Test.*"
-            });
-            
-            //
+            commandListener.Handle(sender, basicDeliverEventArgs);
+
+            // Assert
             repositoryMock.Verify(mock => mock.FindBy(It.IsAny<LogEntryCriteria>()));
         }
         
@@ -126,23 +119,36 @@ namespace AuditLog.Test
         public void ReplayEventCallsFindByOnRepositoryWithRightCriteria()
         {
             // Arrange
-            LogEntryCriteria logEntryCriteria = null;
+            var logEntryCriteria = new LogEntryCriteria();
+            var sender = new object();
+            var basicDeliverEventArgs = new BasicDeliverEventArgs
+            {
+                BasicProperties = new BasicProperties
+                {
+                    Type = "SomeCommand",
+                    Timestamp = new AmqpTimestamp(new DateTime(2019, 6, 4).Ticks),
+                },
+                Body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new ReplayEventsCommand
+                {
+                    EventType = "DomainEvent",
+                    RoutingKey = "Test.*"
+                })),
+                RoutingKey = "TestQueue"
+            };
             var eventReplayerMock = new Mock<IEventReplayer>();
             var repositoryMock = new Mock<IAuditLogRepository<LogEntry, long>>();
             var repository = repositoryMock.Object;
             var eventReplayer = eventReplayerMock.Object;
             var routingKeyMatcherMock = new Mock<IRoutingKeyMatcher>();
             var routingKeyMatcher = routingKeyMatcherMock.Object;
-            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher);
+            var eventBusMock = new Mock<IEventBus>();
+            var eventBus = eventBusMock.Object;
+            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
             repositoryMock.Setup(mock => mock.FindBy(It.IsAny<LogEntryCriteria>()))
                 .Callback((LogEntryCriteria criteria) => logEntryCriteria = criteria);
             
             // Act
-            commandListener.ReplayEvents(new ReplayEventsCommand
-            {
-                EventType = "DomainEvent",
-                RoutingKey = "Test.*"
-            });
+            commandListener.Handle(sender, basicDeliverEventArgs);
             
             //
             Assert.AreEqual("DomainEvent", logEntryCriteria.EventType);
@@ -155,20 +161,33 @@ namespace AuditLog.Test
         public void ReplayEventsCallsReplayLogEntriesOnEventReplayer()
         {
             // Arrange
+            var sender = new object();
+            var basicDeliverEventArgs = new BasicDeliverEventArgs
+            {
+                BasicProperties = new BasicProperties
+                {
+                    Type = "SomeCommand",
+                    Timestamp = new AmqpTimestamp(new DateTime(2019, 6, 4).Ticks),
+                },
+                Body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new ReplayEventsCommand
+                {
+                    EventType = "DomainEvent",
+                    RoutingKey = "Test.*"
+                })),
+                RoutingKey = "TestQueue"
+            };
             var eventReplayerMock = new Mock<IEventReplayer>();
             var repositoryMock = new Mock<IAuditLogRepository<LogEntry, long>>();
             var repository = repositoryMock.Object;
             var eventReplayer = eventReplayerMock.Object;
             var routingKeyMatcherMock = new Mock<IRoutingKeyMatcher>();
             var routingKeyMatcher = routingKeyMatcherMock.Object;
-            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher);
+            var eventBusMock = new Mock<IEventBus>();
+            var eventBus = eventBusMock.Object;
+            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
             
             // Act
-            commandListener.ReplayEvents(new ReplayEventsCommand
-            {
-                EventType = "DomainEvent",
-                RoutingKey = "Test.*"
-            });
+            commandListener.Handle(sender, basicDeliverEventArgs);
             
             // Assert
             eventReplayerMock.Verify(mock => mock.ReplayLogEntries(It.IsAny<IEnumerable<LogEntry>>()));
@@ -178,20 +197,36 @@ namespace AuditLog.Test
         public void ReplayEventsReturnsReplayEventResponse200()
         {
             // Arrange
+            var result = new ReplayEventsResponse();
+            var sender = new object();
+            var basicDeliverEventArgs = new BasicDeliverEventArgs
+            {
+                BasicProperties = new BasicProperties
+                {
+                    Type = "SomeCommand",
+                    Timestamp = new AmqpTimestamp(new DateTime(2019, 6, 4).Ticks),
+                },
+                Body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new ReplayEventsCommand
+                {
+                    EventType = "DomainEvent",
+                    RoutingKey = "Test.*"
+                })),
+                RoutingKey = "TestQueue"
+            };
             var eventReplayerMock = new Mock<IEventReplayer>();
             var repositoryMock = new Mock<IAuditLogRepository<LogEntry, long>>();
             var repository = repositoryMock.Object;
             var eventReplayer = eventReplayerMock.Object;
             var routingKeyMatcherMock = new Mock<IRoutingKeyMatcher>();
             var routingKeyMatcher = routingKeyMatcherMock.Object;
-            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher);
-            
+            var eventBusMock = new Mock<IEventBus>();
+            var eventBus = eventBusMock.Object;
+            eventBusMock.Setup(mock => mock.PublishCommand(It.IsAny<ReplayEventsResponse>()))
+                .Callback((DomainCommand response) => result = response as ReplayEventsResponse);
+            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
+
             // Act
-            var result = commandListener.ReplayEvents(new ReplayEventsCommand
-            {
-                EventType = "DomainEvent",
-                RoutingKey = "Test.*"
-            });
+            commandListener.Handle(sender, basicDeliverEventArgs);
 
             // Assert
             Assert.AreEqual(StatusCodes.Status200OK, result.Code);
@@ -202,21 +237,38 @@ namespace AuditLog.Test
         public void ReplayEventsReturnsReplayEventResponse500()
         {
             // Arrange
+            var result = new ReplayEventsResponse();
+            var sender = new object();
+            var basicDeliverEventArgs = new BasicDeliverEventArgs
+            {
+                BasicProperties = new BasicProperties
+                {
+                    Type = "SomeCommand",
+                    Timestamp = new AmqpTimestamp(new DateTime(2019, 6, 4).Ticks),
+                },
+                Body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new ReplayEventsCommand
+                {
+                    EventType = "DomainEvent",
+                    RoutingKey = "Test.*"
+                })),
+                RoutingKey = "TestQueue"
+            };
             var eventReplayerMock = new Mock<IEventReplayer>();
             var repositoryMock = new Mock<IAuditLogRepository<LogEntry, long>>();
             var repository = repositoryMock.Object;
             var eventReplayer = eventReplayerMock.Object;
-            var routingKeyMatcherMock = new Mock<RoutingKeyMatcher>();
+            var routingKeyMatcherMock = new Mock<IRoutingKeyMatcher>();
             var routingKeyMatcher = routingKeyMatcherMock.Object;
-            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher);
+            var eventBusMock = new Mock<IEventBus>();
+            var eventBus = eventBusMock.Object;
+            eventBusMock.Setup(mock => mock.PublishCommand(It.IsAny<ReplayEventsResponse>()))
+                .Callback((DomainCommand response) => result = response as ReplayEventsResponse);
+            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
             repositoryMock.Setup(mock => mock.FindBy(It.IsAny<LogEntryCriteria>()))
                 .Throws(new Exception());
+            
             // Act
-            var result = commandListener.ReplayEvents(new ReplayEventsCommand
-            {
-                EventType = "DomainEvent",
-                RoutingKey = "Test.*"
-            });
+            commandListener.Handle(sender, basicDeliverEventArgs);
 
             // Assert
             Assert.AreEqual(StatusCodes.Status500InternalServerError, result.Code);
@@ -227,13 +279,30 @@ namespace AuditLog.Test
         public void ReplayEventsCallsIsMatchOnRoutingKeyMatcher()
         {
             // Arrange
+            var sender = new object();
+            var basicDeliverEventArgs = new BasicDeliverEventArgs
+            {
+                BasicProperties = new BasicProperties
+                {
+                    Type = "SomeCommand",
+                    Timestamp = new AmqpTimestamp(new DateTime(2019, 6, 4).Ticks),
+                },
+                Body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new ReplayEventsCommand
+                {
+                    EventType = "DomainEvent",
+                    RoutingKey = "Test.*"
+                })),
+                RoutingKey = "TestQueue"
+            };
             var eventReplayerMock = new Mock<IEventReplayer>();
             var repositoryMock = new Mock<IAuditLogRepository<LogEntry, long>>();
             var repository = repositoryMock.Object;
             var eventReplayer = eventReplayerMock.Object;
             var routingKeyMatcherMock = new Mock<IRoutingKeyMatcher>();
             var routingKeyMatcher = routingKeyMatcherMock.Object;
-            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher);
+            var eventBusMock = new Mock<IEventBus>();
+            var eventBus = eventBusMock.Object;
+            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
             repositoryMock.Setup(mock => mock.FindBy(It.IsAny<LogEntryCriteria>()))
                 .Returns(new List<LogEntry>
                 {
@@ -252,12 +321,9 @@ namespace AuditLog.Test
                         EventType = "DomainEvent"
                     }
                 });
+            
             // Act
-            commandListener.ReplayEvents(new ReplayEventsCommand
-            {
-                EventType = "DomainEvent",
-                RoutingKey = "Test.*"
-            });
+            commandListener.Handle(sender, basicDeliverEventArgs);
             
             // Assert
             routingKeyMatcherMock.Verify(mock => mock.IsMatch("Test.*", It.IsAny<string>()));

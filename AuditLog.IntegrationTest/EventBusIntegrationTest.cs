@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using AuditLog.Abstractions;
 using AuditLog.DAL;
+using AuditLog.Domain;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -106,7 +107,7 @@ namespace AuditLog.IntegrationTest
             var awaitHandle = new ManualResetEvent(false);
 
             // Act
-            PublishCommand(eventBus);
+            eventBus.PublishCommand(new Command());
             awaitHandle.WaitOne(1000);
 
             // Assert
@@ -134,6 +135,11 @@ namespace AuditLog.IntegrationTest
             basicProperties.Timestamp = new AmqpTimestamp(new DateTime(2019, 5, 3).Ticks);
             eventBus.Model.BasicPublish("", "TestQueue", false, basicProperties, body);
         }
+    }
+
+    internal class Command : DomainCommand
+    {
+        public Command() : base("AuditLog") { }
     }
 
     internal class Message

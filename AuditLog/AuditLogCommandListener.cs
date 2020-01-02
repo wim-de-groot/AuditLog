@@ -1,30 +1,42 @@
 using System.Linq;
+using System.Text;
 using AuditLog.Abstractions;
 using AuditLog.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Minor.Miffy.MicroServices.Events;
+using Newtonsoft.Json;
+using RabbitMQ.Client.Events;
 
 namespace AuditLog
 {
-    public class AuditLogCommandListener
+    public class AuditLogCommandListener : ICommandListener
     {
         private readonly ILogger<AuditLogCommandListener> _logger;
         private readonly IAuditLogRepository<LogEntry, long> _repository;
         private readonly IEventReplayer _eventReplayer;
         private readonly IRoutingKeyMatcher _routingKeyMatcher;
+        private readonly IEventBus _eventBus;
 
         public AuditLogCommandListener(IAuditLogRepository<LogEntry, long> repository, IEventReplayer eventReplayer,
-            IRoutingKeyMatcher routingKeyMatcher)
+            IRoutingKeyMatcher routingKeyMatcher, IEventBus eventBus)
         {
+            _eventBus = eventBus;
             _repository = repository;
             _eventReplayer = eventReplayer;
             _routingKeyMatcher = routingKeyMatcher;
             _logger = AuditLogLoggerFactory.CreateInstance<AuditLogCommandListener>();
         }
+        public void Handle(object sender, BasicDeliverEventArgs basicDeliverEventArgs)
+        {
+            var body = Encoding.UTF8.GetString(basicDeliverEventArgs.Body);
 
-        [CommandListener("AuditLog")]
-        public ReplayEventsResponse ReplayEvents(ReplayEventsCommand command)
+            var command = JsonConvert.DeserializeObject<ReplayEventsCommand>(body);
+            
+            var response = ReplayEvents(command);
+            
+            _eventBus.PublishCommand(response);
+        }
+        private ReplayEventsResponse ReplayEvents(ReplayEventsCommand command)
         {
             try
             {

@@ -1,5 +1,8 @@
 using System;
+using System.Text;
 using AuditLog.Abstractions;
+using AuditLog.Domain;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -31,7 +34,6 @@ namespace AuditLog
 
             return this;
         }
-
         public IEventBus AddCommandListener(ICommandListener commandListener, string queueName)
         {
              Model.QueueDeclare(queueName, true, false, false, null);
@@ -43,7 +45,15 @@ namespace AuditLog
                  
              return this;
         }
-
+        public void PublishCommand(DomainCommand command)
+        {
+            var json = JsonConvert.SerializeObject(command);
+            var body = Encoding.UTF8.GetBytes(json);
+            var basicProperties = Model.CreateBasicProperties();
+            basicProperties.Type = command.GetType().Name;
+            basicProperties.Timestamp = new AmqpTimestamp(new DateTime(2019, 5, 3).Ticks);
+            Model.BasicPublish("", "TestQueue", false, basicProperties, body);
+        }
         public void Dispose()
         { 
             Dispose(true);
