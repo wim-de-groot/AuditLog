@@ -21,15 +21,13 @@ namespace AuditLog.Domain
 
         protected DomainCommand(string destinationQueue)
         {
-            this.Timestamp = DateTime.Now.Ticks;
-            this.Id = Guid.NewGuid();
-            this.DestinationQueue = destinationQueue;
+            Timestamp = DateTime.Now.Ticks;
+            Id = Guid.NewGuid();
+            DestinationQueue = destinationQueue;
         }
 
         protected DomainCommand(string destinationQueue, Guid processId)
-            : this(destinationQueue)
-        {
-            this.ProcessId = processId;
-        }
+            : this(destinationQueue) =>
+            ProcessId = processId;
     }
 }

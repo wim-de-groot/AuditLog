@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using AuditLog.Abstractions;
+using AuditLog.Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQ.Client.Framing;
 
 namespace AuditLog.Test
 {
@@ -266,6 +270,52 @@ namespace AuditLog.Test
             
             // Assert
             Assert.IsNotNull(basicConsumer);
+        }
+
+        [TestMethod]
+        public void PublishCommandShouldCallBasicPublish()
+        {
+            // Arrange
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            var connectionMock = new Mock<IConnection>();
+            var connection = connectionMock.Object;
+            connectionMock.Setup(mock => mock.CreateModel()).Returns(model);
+            modelMock.Setup(mock => mock.CreateBasicProperties()).Returns(new BasicProperties());
+            using var eventBus = new EventBus(connection, "TestExchange");
+            
+            // Act
+            eventBus.PublishCommand(new ReplayEventsCommand());
+            
+            // Assert
+            modelMock.Verify(mock => mock.BasicPublish(string.Empty, "AuditLog", false, It.IsAny<IBasicProperties>(), It.IsAny<byte[]>()));
+        }
+
+        [TestMethod]
+        public void PublishCommandShouldCreateBasicPropertiesWithTypeOfReplayEventsCommand()
+        {
+            // Arrange
+            IBasicProperties properties = null;
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            var connectionMock = new Mock<IConnection>();
+            var connection = connectionMock.Object;
+            connectionMock.Setup(mock => mock.CreateModel()).Returns(model);
+            modelMock.Setup(mock => mock.CreateBasicProperties()).Returns(new BasicProperties());
+            modelMock.Setup(mock =>
+                mock.BasicPublish(string.Empty, "AuditLog", false, It.IsAny<IBasicProperties>(), It.IsAny<byte[]>()))
+                .Callback((string ExchangeType, string routingKey, bool mandatory, IBasicProperties basicProperties,
+                    byte[] body) =>
+                {
+                    properties = basicProperties;
+                });
+            using var eventBus = new EventBus(connection, "TestExchange");
+            
+            // Act
+            eventBus.PublishCommand(new ReplayEventsCommand());
+            
+            // Assert
+            Assert.AreEqual("ReplayEventsCommand", properties.Type);
         }
     }
 }
