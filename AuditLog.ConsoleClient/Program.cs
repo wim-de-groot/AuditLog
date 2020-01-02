@@ -38,10 +38,9 @@ namespace AuditLog.ConsoleClient
                 using var context = new AuditLogContext(options);
                 var repository = new AuditLogRepository(context);
                 var eventListener = new AuditLogEventListener(repository);
-                using var eventBus = new EventBusBuilder()
-                    .FromEnvironment()
-                    .CreateEventBus(new ConnectionFactory())
-                    .AddEventListener(eventListener, "#");
+                var eventBusBuilder = new EventBusBuilder().FromEnvironment();
+                using var eventBus = eventBusBuilder.CreateEventBus(new ConnectionFactory());
+                eventBus.AddEventListener(eventListener, "#");
                 
                 logger.LogTrace("Host started, audit logger ready to log");
 

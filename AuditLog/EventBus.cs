@@ -51,8 +51,8 @@ namespace AuditLog
             var body = Encoding.UTF8.GetBytes(json);
             var basicProperties = Model.CreateBasicProperties();
             basicProperties.Type = command.GetType().Name;
-            basicProperties.Timestamp = new AmqpTimestamp(new DateTime(2019, 5, 3).Ticks);
-            Model.BasicPublish("", "TestQueue", false, basicProperties, body);
+            basicProperties.Timestamp = new AmqpTimestamp(DateTime.Now.Ticks);
+            Model.BasicPublish(string.Empty, command.DestinationQueue, false, basicProperties, body);
         }
         public void Dispose()
         { 

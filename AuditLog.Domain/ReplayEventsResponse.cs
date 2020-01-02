@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Minor.Miffy.MicroServices.Commands;
 
 namespace AuditLog.Domain
 {
