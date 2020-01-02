@@ -31,8 +31,6 @@ namespace AuditLog.WebApi
             services.AddDbContext<AuditLogContext>(optionsBuilder => optionsBuilder
                 .UseMySql(connectionString));
             services.AddTransient<IAuditLogRepository<LogEntry, long>, AuditLogRepository>();
-            services.AddTransient<IEventReplayer, EventReplayer>();
-            services.AddTransient<IRoutingKeyMatcher, RoutingKeyMatcher>();
             services.AddControllers();
         }
 

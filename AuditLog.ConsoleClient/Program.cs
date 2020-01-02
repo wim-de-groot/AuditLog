@@ -19,10 +19,6 @@ namespace AuditLog.ConsoleClient
         {
             var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug));
 
-            MiffyLoggerFactory.LoggerFactory = loggerFactory;
-
-            RabbitMqLoggerFactory.LoggerFactory = loggerFactory;
-
             AuditLogLoggerFactory.LoggerFactory = loggerFactory;
 
             var logger = loggerFactory.CreateLogger("Program");
