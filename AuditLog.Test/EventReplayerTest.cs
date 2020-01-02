@@ -5,7 +5,6 @@ using AuditLog.Abstractions;
 using AuditLog.Domain;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Minor.Miffy;
 using Moq;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Framing;
@@ -67,7 +66,7 @@ namespace AuditLog.Test
             eventReplayer.ReplayLogEntry(new LogEntry
             {
                 Id = 1,
-                EventJson = "{'title': 'iets'}",
+                EventJson = "{'title': 'Something'}",
                 EventType = "DomainEvent",
                 RoutingKey = "Test.*",
                 Timestamp = new DateTime(2019, 7, 6).Ticks
@@ -129,7 +128,7 @@ namespace AuditLog.Test
             eventReplayer.ReplayLogEntry(new LogEntry
             {
                 Id = 1,
-                EventJson = "{'title': 'iets'}",
+                EventJson = "{'title': 'Something'}",
                 EventType = "DomainEvent",
                 RoutingKey = "Test.*",
                 Timestamp = new DateTime(2019, 7, 6).Ticks
@@ -140,7 +139,7 @@ namespace AuditLog.Test
             Assert.AreEqual("DomainEvent", type);
             Assert.AreEqual("Replay.Test.*", queueName);
             Assert.AreEqual(new DateTime(2019, 7, 6).Ticks, timestamp);
-            Assert.AreEqual("{'title': 'iets'}", Encoding.Unicode.GetString(buffer));
+            Assert.AreEqual("{'title': 'Something'}", Encoding.Unicode.GetString(buffer));
         }
 
         [TestMethod]
@@ -163,7 +162,7 @@ namespace AuditLog.Test
                 new LogEntry
                 {
                     Id = 1,
-                    EventJson = "{'title': 'iets'}",
+                    EventJson = "{'title': 'Something'}",
                     EventType = "DomainEvent",
                     RoutingKey = "Test.*",
                     Timestamp = new DateTime(2019, 7, 6).Ticks
@@ -171,7 +170,7 @@ namespace AuditLog.Test
                 new LogEntry
                 {
                     Id = 2,
-                    EventJson = "{'title': 'nog iets'}",
+                    EventJson = "{'title': 'nog Something'}",
                     EventType = "DomainEvent",
                     RoutingKey = "Test.*",
                     Timestamp = new DateTime(2019, 7, 6).Ticks

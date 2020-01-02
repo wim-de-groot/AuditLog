@@ -5,9 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Minor.Miffy;
-using Minor.Miffy.MicroServices.Host;
-using Minor.Miffy.RabbitMQBus;
 using RabbitMQ.Client;
 
 namespace AuditLog.WebApi
@@ -18,10 +15,6 @@ namespace AuditLog.WebApi
         public static void Main(string[] args)
         {            
             var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug));
-
-            MiffyLoggerFactory.LoggerFactory = loggerFactory;
-
-            RabbitMqLoggerFactory.LoggerFactory = loggerFactory;
 
             AuditLogLoggerFactory.LoggerFactory = loggerFactory;
 
@@ -45,6 +38,8 @@ namespace AuditLog.WebApi
             eventBus.AddCommandListener(commandListener, "AuditLog");
 
             CreateHostBuilder(args).Build().Run();
+            
+            logger.LogTrace("AuditLog started ...");
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>

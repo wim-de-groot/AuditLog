@@ -234,7 +234,7 @@ namespace AuditLog.Test
             IEventBusBuilder builder = new EventBusBuilder();
 
             // Act
-            var result = builder.FromEnvironment().CreateEventBus(factory);
+            builder.FromEnvironment().CreateEventBus(factory);
             
             // Assert
             connectionMock.Verify(mock => mock.CreateModel());

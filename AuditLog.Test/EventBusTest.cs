@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using AuditLog.Abstractions;
 using AuditLog.Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Newtonsoft.Json;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Framing;
 
 namespace AuditLog.Test

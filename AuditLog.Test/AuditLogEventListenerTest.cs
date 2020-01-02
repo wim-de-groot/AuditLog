@@ -1,17 +1,13 @@
 using System;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 using AuditLog.Abstractions;
 using AuditLog.Domain;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Minor.Miffy.MicroServices.Events;
 using Moq;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Framing;
-using IMessageReceiver = Minor.Miffy.IMessageReceiver;
 
 namespace AuditLog.Test
 {

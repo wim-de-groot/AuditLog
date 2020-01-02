@@ -4,8 +4,6 @@ using System.Threading;
 using AuditLog.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Minor.Miffy;
-using Minor.Miffy.RabbitMQBus;
 using RabbitMQ.Client;
 
 namespace AuditLog.ConsoleClient
