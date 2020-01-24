@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MaartenH.Minor.Miffy.Microservices" Version="1.6.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     </ItemGroup>
 
 </Project>

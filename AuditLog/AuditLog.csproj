@@ -6,9 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MaartenH.Minor.Miffy.Microservices" Version="1.6.0" />
-      <PackageReference Include="MaartenH.Minor.Miffy.RabbitMQBus" Version="1.6.0" />
       <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.0-preview3.19553.2" />
+      <PackageReference Include="RabbitMQ.Client" Version="5.1.2" />
     </ItemGroup>
 
     <ItemGroup>

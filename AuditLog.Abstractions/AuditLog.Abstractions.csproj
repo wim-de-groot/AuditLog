@@ -9,4 +9,8 @@
       <ProjectReference Include="..\AuditLog.Domain\AuditLog.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="RabbitMQ.Client" Version="5.1.2" />
+    </ItemGroup>
+
 </Project>
