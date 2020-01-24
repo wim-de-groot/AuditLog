@@ -14,7 +14,13 @@ namespace AuditLog.WebApi
     {
         public static void Main(string[] args)
         {
-            var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug));
+            var logLevel = Environment.GetEnvironmentVariable("LOG_LEVEL") ??
+                           throw new InvalidEnvironmentException(
+                               "Environment variable [LOG_LEVEL] was not provided.");
+
+            Enum.TryParse(logLevel, true, out LogLevel result);
+            
+            var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(result).AddConsole());
 
             AuditLogLoggerFactory.LoggerFactory = loggerFactory;
 
