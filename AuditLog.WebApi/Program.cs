@@ -40,7 +40,13 @@ namespace AuditLog.WebApi
                 var routingKeyMatcher = new RoutingKeyMatcher();
                 var eventListener = new AuditLogEventListener(repository);
                 var eventBusBuilder = new EventBusBuilder().FromEnvironment();
-                using var eventBus = eventBusBuilder.CreateEventBus(new ConnectionFactory());
+                using var eventBus = eventBusBuilder.CreateEventBus(new ConnectionFactory
+                {
+                    HostName = eventBusBuilder.HostName,
+                    Port =     eventBusBuilder.Port,
+                    UserName = eventBusBuilder.UserName,
+                    Password = eventBusBuilder.Password
+                });
                 var eventReplayer = new EventReplayer(eventBus);
                 var commandListener =
                     new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
