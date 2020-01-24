@@ -9,7 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Minor.Miffy.RabbitMQBus;
+using RabbitMQ.Client;
 
 namespace AuditLog.WebApi
 {
@@ -26,7 +28,8 @@ namespace AuditLog.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
-                                   "server=localhost;uid=root;pwd=root;database=AuditLogDB";
+                                   throw new InvalidEnvironmentException(
+                                       "Environment variable [CONNECTION_STRING] was not provided.");
 
             services.AddDbContext<AuditLogContext>(optionsBuilder => optionsBuilder
                 .UseMySql(connectionString));

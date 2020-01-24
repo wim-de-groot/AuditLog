@@ -9,6 +9,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\AuditLog.ConsoleClient\AuditLog.ConsoleClient.csproj" />
       <ProjectReference Include="..\AuditLog.DAL\AuditLog.DAL.csproj" />
       <ProjectReference Include="..\AuditLog\AuditLog.csproj" />
     </ItemGroup>
