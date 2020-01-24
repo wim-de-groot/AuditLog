@@ -42,15 +42,15 @@ namespace AuditLog.WebApi
                 eventBus.AddCommandListener(commandListener, "AuditLog");
 
                 logger.LogTrace("Host started, audit logger ready to log");
+                
+                CreateHostBuilder(args).Build().Run();
+
+                logger.LogTrace("AuditLog started ...");
             }
             catch (Exception e)
             {
                 logger.LogError($"Error occured while running the client with message: {e.Message}");
             }
-            
-            CreateHostBuilder(args).Build().Run();
-
-            logger.LogTrace("AuditLog started ...");
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
