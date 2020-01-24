@@ -54,6 +54,8 @@ namespace AuditLog
                 logEntries = logEntries
                     .Where(entry => _routingKeyMatcher.IsMatch(criteria.RoutingKey, entry.RoutingKey)).ToList();
                 _logger.LogTrace($"Filtered log entries, which results in {logEntries.Count} log entries");
+                
+                _eventReplayer.RegisterReplayExchange(command.ReplayExchangeName);
 
                 _eventReplayer.ReplayLogEntries(logEntries);
                 _logger.LogTrace($"Replayed {logEntries.Count} log entries");

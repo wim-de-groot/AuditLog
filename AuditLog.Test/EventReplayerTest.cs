@@ -185,7 +185,52 @@ namespace AuditLog.Test
                     false,
                     properties,
                     It.IsAny<byte[]>()), Times.Exactly(2));
+        }
 
+        [TestMethod]
+        public void RegisterReplayExchangeShouldSetTheWhereTheEventsAreReplayedTo()
+        {
+            // Arrange
+            var properties = new BasicProperties();
+            var channelMock = new Mock<IModel>();
+            var channel = channelMock.Object;
+            var eventBusMock = new Mock<IEventBus>();
+            var eventBus = eventBusMock.Object;
+            var eventReplayer = new EventReplayer(eventBus);
+            eventBusMock.Setup(mock => mock.ExchangeName).Returns("TestExchange");
+            eventBusMock.Setup(mock => mock.Connection.CreateModel()).Returns(channel);
+            channelMock.Setup(mock => mock.CreateBasicProperties()).Returns(properties);
+            
+            // Act
+            eventReplayer.RegisterReplayExchange("AuditLog.TestExchange");
+            eventReplayer.ReplayLogEntries(new List<LogEntry>
+            {
+                new LogEntry
+                {
+                    Id = 1,
+                    EventJson = "{'title': 'Something'}",
+                    EventType = "DomainEvent",
+                    RoutingKey = "Test.*",
+                    Timestamp = new DateTime(2019, 7, 6).Ticks
+                },
+                new LogEntry
+                {
+                    Id = 2,
+                    EventJson = "{'title': 'nog Something'}",
+                    EventType = "DomainEvent",
+                    RoutingKey = "Test.*",
+                    Timestamp = new DateTime(2019, 7, 6).Ticks
+                }
+            });
+            
+            // Assert
+            channelMock.Verify(mock => mock
+                .BasicPublish(
+                    "AuditLog.TestExchange",
+                    "Replay.Test.*",
+                    false,
+                    properties,
+                    It.IsAny<byte[]>()), Times.Exactly(2));
         }
     }
 }

@@ -11,10 +11,18 @@ namespace AuditLog
     {
         private readonly IEventBus _eventBus;
         private readonly ILogger<EventReplayer> _logger;
+        private string _replayExchangeName;
+
         public EventReplayer(IEventBus eventBus)
         {
             _eventBus = eventBus;
+            _replayExchangeName = string.Empty;
             _logger = AuditLogLoggerFactory.CreateInstance<EventReplayer>();
+        }
+
+        public void RegisterReplayExchange(string replayExchangeName)
+        {
+            _replayExchangeName = replayExchangeName;
         }
 
         public void ReplayLogEntries(IEnumerable<LogEntry> logEntries)
@@ -41,7 +49,7 @@ namespace AuditLog
             _logger.LogTrace("Encoded Json message");
             
             channel.BasicPublish(
-                exchange: string.Empty,
+                exchange: _replayExchangeName,
                 routingKey: $"Replay.{logEntry.RoutingKey}",
                 basicProperties: properties,
                 body: body
