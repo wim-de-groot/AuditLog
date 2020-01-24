@@ -24,8 +24,9 @@ namespace AuditLog.ConsoleClient
             try
             {
                 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
-                                       "server=localhost;uid=root;pwd=root;database=AuditLogDB";
-                
+                                       throw new InvalidEnvironmentException(
+                                           "Environment variable [CONNECTION_STRING] was not provided.");
+
                 var options = new DbContextOptionsBuilder<AuditLogContext>()
                     .UseMySql(connectionString)
                     .Options;
@@ -36,10 +37,11 @@ namespace AuditLog.ConsoleClient
                 var eventBusBuilder = new EventBusBuilder().FromEnvironment();
                 using var eventBus = eventBusBuilder.CreateEventBus(new ConnectionFactory());
                 var eventReplayer = new EventReplayer(eventBus);
-                var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
+                var commandListener =
+                    new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
                 eventBus.AddEventListener(eventListener, "#");
                 eventBus.AddCommandListener(commandListener, "AuditLog");
-                
+
                 logger.LogTrace("Host started, audit logger ready to log");
 
                 _stopEvent.WaitOne();
