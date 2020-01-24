@@ -3,4 +3,4 @@ ARG source
 WORKDIR /app
 EXPOSE 80
 COPY ${source:-./obj/docker/publish} .
-ENTRYPOINT ["dotnet", "AuditLog.ConsoleClient.dll"]
+ENTRYPOINT ["dotnet", "AuditLog.WebApi.dll"]
