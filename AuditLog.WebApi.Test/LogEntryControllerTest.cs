@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using AuditLog.Abstractions;
 using AuditLog.Domain;
 using AuditLog.WebApi.Controllers;
@@ -83,6 +84,64 @@ namespace AuditLog.WebApi.Test
 
             // Assert
             Assert.IsTrue(result.Any(entry => entry.EventType.Equals("PolisCreatedEvent")));
+        }
+
+        [TestMethod]
+        public void ShouldHaveApiControllerAttribute()
+        {
+            // Arrange
+            var repositoryMock = new Mock<IAuditLogRepository<LogEntry, long>>();
+            var repository = repositoryMock.Object;
+            var controller = new LogEntryController(repository);
+
+            // Act
+            var result = controller.GetType().GetCustomAttribute<ApiControllerAttribute>();
+            
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public void ShouldHaveRouteAttribute()
+        {
+            // Arrange
+            var repositoryMock = new Mock<IAuditLogRepository<LogEntry, long>>();
+            var repository = repositoryMock.Object;
+            var controller = new LogEntryController(repository);
+
+            // Act
+            var result = controller.GetType().GetCustomAttribute<RouteAttribute>();
+            
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public void RouteAttributeShouldHaveTemplateOfLogEntries()
+        {
+            // Arrange
+            var repositoryMock = new Mock<IAuditLogRepository<LogEntry, long>>();
+            var repository = repositoryMock.Object;
+            var controller = new LogEntryController(repository);
+
+            // Act
+            var result = controller.GetType().GetCustomAttribute<RouteAttribute>().Template;
+            
+            // Assert
+            Assert.AreEqual("logEntries", result);
+        }
+
+        [TestMethod]
+        public void GetAllShouldHaveAHttpGetAttribute()
+        {
+            // Arrange
+            var repositoryMock = new Mock<IAuditLogRepository<LogEntry, long>>();
+            var repository = repositoryMock.Object;
+            var controller = new LogEntryController(repository);
+
+            // Act
+            var result = controller.GetType().GetMethod("GetAll")?.GetCustomAttribute<HttpGetAttribute>();
+            
+            // Assert
+            Assert.IsNotNull(result);
         }
     }
 }

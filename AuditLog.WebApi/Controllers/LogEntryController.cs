@@ -6,12 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AuditLog.WebApi.Controllers
 {
-    public class LogEntryController
+    [ApiController]
+    [Route("logEntries")]
+    public class LogEntryController : ControllerBase
     {
         private readonly IAuditLogRepository<LogEntry, long> _repository;
 
         public LogEntryController(IAuditLogRepository<LogEntry,long> repository) => _repository = repository;
 
+        [HttpGet]
         public ActionResult<IEnumerable<LogEntry>> GetAll() => _repository.FindAll().ToList();
     }
 }

@@ -31,6 +31,23 @@ namespace AuditLog.ConsoleClient
                     .UseMySql(connectionString)
                     .Options;
                 using var context = new AuditLogContext(options);
+                
+                var createdAndSeeded = false;
+                const int waitTime = 1000;
+                while (!createdAndSeeded)
+                {
+                    try
+                    {
+                        context.Database.EnsureCreated();
+                        createdAndSeeded = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        Thread.Sleep(waitTime);
+                    }
+                }
+                
                 var repository = new AuditLogRepository(context);
                 var routingKeyMatcher = new RoutingKeyMatcher();
                 var eventListener = new AuditLogEventListener(repository);

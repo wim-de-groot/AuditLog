@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using AuditLog.Abstractions;
 using AuditLog.DAL;
 using AuditLog.Domain;
@@ -39,6 +40,26 @@ namespace AuditLog.WebApi
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using var serviceScope = app.ApplicationServices
+                .GetRequiredService<IServiceScopeFactory>()
+                .CreateScope();
+                
+            var createdAndSeeded = false;
+            const int waitTime = 1000;
+            while (!createdAndSeeded)
+            {
+                try
+                {
+                    serviceScope.ServiceProvider.GetService<AuditLogContext>().Database.EnsureCreated();
+                    createdAndSeeded = true;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Thread.Sleep(waitTime);
+                }
+            }
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
