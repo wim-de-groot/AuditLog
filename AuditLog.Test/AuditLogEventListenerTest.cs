@@ -32,7 +32,7 @@ namespace AuditLog.Test
                      Type = "SomeEvent",
                      Timestamp = new AmqpTimestamp(new DateTime(2019, 6, 4).Ticks),
                  },
-                 Body = Encoding.UTF8.GetBytes("{'json': 'someJson'}"),
+                 Body = Encoding.Unicode.GetBytes("{'json': 'someJson'}"),
                  RoutingKey = "SomeKey"
              };
             
@@ -60,7 +60,7 @@ namespace AuditLog.Test
                     Type = "SomeEvent",
                     Timestamp = new AmqpTimestamp(new DateTime(2019, 6, 4).Ticks),
                 },
-                Body = Encoding.UTF8.GetBytes("{'json': 'someJson'}"),
+                Body = Encoding.Unicode.GetBytes("{'json': 'someJson'}"),
                 RoutingKey = "SomeKey"
             };
             
@@ -90,7 +90,7 @@ namespace AuditLog.Test
                     Type = "SomeEvent",
                     Timestamp = new AmqpTimestamp(new DateTime(2019, 6, 4).Ticks),
                 },
-                Body = Encoding.UTF8.GetBytes("{'json': 'someJson'}"),
+                Body = Encoding.Unicode.GetBytes("{'json': 'someJson'}"),
                 RoutingKey = "SomeKey"
             };
             
@@ -120,7 +120,7 @@ namespace AuditLog.Test
                     Type = "SomeEvent",
                     Timestamp = new AmqpTimestamp(new DateTime(2019, 6, 4).Ticks),
                 },
-                Body = Encoding.UTF8.GetBytes("{'json': 'someJson'}"),
+                Body = Encoding.Unicode.GetBytes("{'json': 'someJson'}"),
                 RoutingKey = "SomeKey"
             };
             
@@ -150,7 +150,7 @@ namespace AuditLog.Test
                     Type = "SomeEvent",
                     Timestamp = new AmqpTimestamp(new DateTime(2019, 6, 4).Ticks),
                 },
-                Body = Encoding.UTF8.GetBytes("{'json': 'someJson'}"),
+                Body = Encoding.Unicode.GetBytes("{'json': 'someJson'}"),
                 RoutingKey = "SomeKey"
             };
             
