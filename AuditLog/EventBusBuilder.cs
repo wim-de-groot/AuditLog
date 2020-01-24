@@ -13,11 +13,11 @@ namespace AuditLog
         public string ExchangeName { get; private set; }
         public IEventBusBuilder FromEnvironment()
         {
-            HostName = Environment.GetEnvironmentVariable("HOSTNAME") ?? throw new ArgumentException("Environment variable [HOSTNAME] can not be null");
-            UserName = Environment.GetEnvironmentVariable("USERNAME") ?? throw new ArgumentException("Environment variable [USERNAME] can not be null");
-            Password = Environment.GetEnvironmentVariable("PASSWORD") ?? throw new ArgumentException("Environment variable [PASSWORD] can not be null");
-            ExchangeName = Environment.GetEnvironmentVariable("EXCHANGE_NAME") ?? throw new ArgumentException("Environment variable [EXCHANGE_NAME] can not be null");
-            Port = int.Parse(Environment.GetEnvironmentVariable("PORT") ?? throw new ArgumentException("Environment variable [PORT] can not be null"));
+            HostName = Environment.GetEnvironmentVariable("HOSTNAME") ?? throw new InvalidEnvironmentException("Environment variable [HOSTNAME] can not be null");
+            UserName = Environment.GetEnvironmentVariable("USERNAME") ?? throw new InvalidEnvironmentException("Environment variable [USERNAME] can not be null");
+            Password = Environment.GetEnvironmentVariable("PASSWORD") ?? throw new InvalidEnvironmentException("Environment variable [PASSWORD] can not be null");
+            ExchangeName = Environment.GetEnvironmentVariable("EXCHANGE_NAME") ?? throw new InvalidEnvironmentException("Environment variable [EXCHANGE_NAME] can not be null");
+            Port = int.Parse(Environment.GetEnvironmentVariable("PORT") ?? throw new InvalidEnvironmentException("Environment variable [PORT] can not be null"));
             return this;
         }
         public IEventBus CreateEventBus(IConnectionFactory factory)

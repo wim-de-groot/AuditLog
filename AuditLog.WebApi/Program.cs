@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using AuditLog.ConsoleClient;
 using AuditLog.DAL;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +14,7 @@ namespace AuditLog.WebApi
     {
         public static void Main(string[] args)
         {
-            var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug));
+            var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Trace).AddConsole());
 
             AuditLogLoggerFactory.LoggerFactory = loggerFactory;
 

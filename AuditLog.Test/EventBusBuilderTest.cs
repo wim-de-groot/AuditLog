@@ -115,7 +115,7 @@ namespace AuditLog.Test
             IEventBusBuilder builder = new EventBusBuilder();
             
             // Act
-            var result = Assert.ThrowsException<ArgumentException>(() => builder.FromEnvironment());
+            var result = Assert.ThrowsException<InvalidEnvironmentException>(() => builder.FromEnvironment());
             
             // Assert
             Assert.AreEqual("Environment variable [HOSTNAME] can not be null", result.Message);
@@ -129,7 +129,7 @@ namespace AuditLog.Test
             IEventBusBuilder builder = new EventBusBuilder();
             
             // Act
-            var result = Assert.ThrowsException<ArgumentException>(() => builder.FromEnvironment());
+            var result = Assert.ThrowsException<InvalidEnvironmentException>(() => builder.FromEnvironment());
             
             // Assert
             Assert.AreEqual("Environment variable [PORT] can not be null", result.Message);
@@ -143,7 +143,7 @@ namespace AuditLog.Test
             IEventBusBuilder builder = new EventBusBuilder();
             
             // Act
-            var result = Assert.ThrowsException<ArgumentException>(() => builder.FromEnvironment());
+            var result = Assert.ThrowsException<InvalidEnvironmentException>(() => builder.FromEnvironment());
             
             // Assert
             Assert.AreEqual("Environment variable [USERNAME] can not be null", result.Message);
@@ -157,7 +157,7 @@ namespace AuditLog.Test
             IEventBusBuilder builder = new EventBusBuilder();
             
             // Act
-            var result = Assert.ThrowsException<ArgumentException>(() => builder.FromEnvironment());
+            var result = Assert.ThrowsException<InvalidEnvironmentException>(() => builder.FromEnvironment());
             
             // Assert
             Assert.AreEqual("Environment variable [PASSWORD] can not be null", result.Message);
@@ -171,7 +171,7 @@ namespace AuditLog.Test
             IEventBusBuilder builder = new EventBusBuilder();
             
             // Act
-            var result = Assert.ThrowsException<ArgumentException>(() => builder.FromEnvironment());
+            var result = Assert.ThrowsException<InvalidEnvironmentException>(() => builder.FromEnvironment());
             
             // Assert
             Assert.AreEqual("Environment variable [EXCHANGE_NAME] can not be null", result.Message);

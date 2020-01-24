@@ -15,7 +15,7 @@ namespace AuditLog.ConsoleClient
 
         public static void Main(string[] args)
         {
-            var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug));
+            var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Trace).AddConsole());
 
             AuditLogLoggerFactory.LoggerFactory = loggerFactory;
 
