@@ -23,7 +23,7 @@ namespace AuditLog
                 EventType = basicDeliverEventArgs.BasicProperties.Type,
                 Timestamp = basicDeliverEventArgs.BasicProperties.Timestamp.UnixTime,
                 RoutingKey = basicDeliverEventArgs.RoutingKey,
-                EventJson = Encoding.UTF8.GetString(basicDeliverEventArgs.Body)
+                EventJson = Encoding.Unicode.GetString(basicDeliverEventArgs.Body)
             };
             
             _logger.LogTrace(
