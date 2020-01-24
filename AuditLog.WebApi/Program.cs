@@ -14,7 +14,7 @@ namespace AuditLog.WebApi
     {
         public static void Main(string[] args)
         {
-            var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Trace).AddConsole());
+            var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug));
 
             AuditLogLoggerFactory.LoggerFactory = loggerFactory;
 
