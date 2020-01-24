@@ -118,7 +118,7 @@ namespace AuditLog.IntegrationTest
         {
             var message = new Message {Text = "Hello world"};
             var json = JsonConvert.SerializeObject(message);
-            var body = Encoding.UTF8.GetBytes(json);
+            var body = Encoding.Unicode.GetBytes(json);
             var basicProperties = eventBus.Model.CreateBasicProperties();
             basicProperties.Type = "Message";
             basicProperties.Timestamp = new AmqpTimestamp(new DateTime(2019, 5, 3).Ticks);
