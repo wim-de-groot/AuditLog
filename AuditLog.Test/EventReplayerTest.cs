@@ -76,7 +76,7 @@ namespace AuditLog.Test
             channelMock.Verify(mock => mock
                 .BasicPublish(
                     string.Empty, 
-                    "Replay.Test.*", 
+                    "Test.*", 
                     false,
                     properties, 
                     It.IsAny<byte[]>())
@@ -105,7 +105,7 @@ namespace AuditLog.Test
             channelMock.Setup(mock => mock
                     .BasicPublish(
                         string.Empty, 
-                        "Replay.Test.*",
+                        "Test.*",
                         false,
                         properties,
                         It.IsAny<byte[]>()))
@@ -137,7 +137,7 @@ namespace AuditLog.Test
             // Assert
             Assert.AreEqual(string.Empty, exchangeName);
             Assert.AreEqual("DomainEvent", type);
-            Assert.AreEqual("Replay.Test.*", queueName);
+            Assert.AreEqual("Test.*", queueName);
             Assert.AreEqual(new DateTime(2019, 7, 6).Ticks, timestamp);
             Assert.AreEqual("{'title': 'Something'}", Encoding.Unicode.GetString(buffer));
         }
@@ -181,7 +181,7 @@ namespace AuditLog.Test
             channelMock.Verify(mock => mock
                 .BasicPublish(
                     string.Empty,
-                    "Replay.Test.*",
+                    "Test.*",
                     false,
                     properties,
                     It.IsAny<byte[]>()), Times.Exactly(2));
@@ -227,7 +227,7 @@ namespace AuditLog.Test
             channelMock.Verify(mock => mock
                 .BasicPublish(
                     "AuditLog.TestExchange",
-                    "Replay.Test.*",
+                    "Test.*",
                     false,
                     properties,
                     It.IsAny<byte[]>()), Times.Exactly(2));
