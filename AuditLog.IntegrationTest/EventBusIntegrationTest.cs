@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using AuditLog.Abstractions;
 using AuditLog.DAL;
 using AuditLog.Domain;
@@ -114,7 +113,6 @@ namespace AuditLog.IntegrationTest
             // Assert
             commandListenerMock.Verify(mock => mock.Handle(It.IsAny<object>(), It.IsAny<BasicDeliverEventArgs>()));
         }
-        
 
         private static void PublishMessage(IEventBus eventBus)
         {

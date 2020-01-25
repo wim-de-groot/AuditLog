@@ -1,0 +1,44 @@
+version: "3.3"
+
+services:
+  eventbus:
+    image: rabbitmq:3-management
+    restart: unless-stopped
+    container_name: eventbus
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    expose:
+      - "5672"
+      - "15672"
+  database:
+    image: mysql
+    container_name: database
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "3305:3306"
+    expose:
+      - "3306"
+  auditlog:
+    image: wimdegroot/audit-log:8597-management
+    container_name: auditlog
+    restart: unless-stopped
+    environment:
+      LOG_LEVEL: Trace
+      CONNECTION_STRING: "host=database;Database=AuditLogDB;Uid=root;Pwd=root;"
+      HOSTNAME: "eventbus"
+      USERNAME: guest
+      PASSWORD: guest
+      EXCHANGE_NAME: "AuditLog"
+      PORT: 5672
+    ports:
+      - "80:80"
+    expose:
+      - "80"
+    depends_on:
+      - eventbus
