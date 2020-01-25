@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using AuditLog.Abstractions;
 using AuditLog.DAL;
 using AuditLog.Domain;
@@ -114,6 +115,18 @@ namespace AuditLog.IntegrationTest
             commandListenerMock.Verify(mock => mock.Handle(It.IsAny<object>(), It.IsAny<BasicDeliverEventArgs>()));
         }
 
+        [TestMethod]
+        public void TestReplaying()
+        {
+            using var eventBus = new EventBusBuilder()
+                .FromEnvironment()
+                .CreateEventBus(new ConnectionFactory());
+            var awaitHandle = new ManualResetEvent(false);
+            
+            eventBus.PublishCommand(new ReplayEventsCommand{ ReplayExchangeName = "Kantilever", RoutingKey = "#"});
+            awaitHandle.WaitOne(10000);
+        }
+
         private static void PublishMessage(IEventBus eventBus)
         {
             var message = new Message {Text = "Hello world"};
@@ -124,11 +137,6 @@ namespace AuditLog.IntegrationTest
             basicProperties.Timestamp = new AmqpTimestamp(new DateTime(2019, 5, 3).Ticks);
             eventBus.Model.BasicPublish("TestExchange", "Test.Test.#", false, basicProperties, body);
         }
-    }
-
-    internal class Command : DomainCommand
-    {
-        public Command() : base("TestQueue") { }
     }
 
     internal class Message

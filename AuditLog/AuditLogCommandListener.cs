@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text;
 using AuditLog.Abstractions;
@@ -60,9 +61,9 @@ namespace AuditLog
                 _eventReplayer.ReplayLogEntries(logEntries);
                 _logger.LogTrace($"Replayed {logEntries.Count} log entries");
             }
-            catch
+            catch(Exception exception)
             {
-                _logger.LogError("Internal error occured");
+                _logger.LogError($"Internal error occured, with exception: {exception.Message}");
                 return new ReplayEventsResponse {Code = StatusCodes.Status500InternalServerError, Status = "Internal Error"};
             }
 
