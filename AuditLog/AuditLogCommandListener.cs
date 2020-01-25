@@ -36,6 +36,8 @@ namespace AuditLog
             var response = ReplayEvents(command);
             
             _eventBus.PublishCommand(response);
+            
+            _eventBus.Model.BasicAck(basicDeliverEventArgs.DeliveryTag, false);
         }
         private ReplayEventsResponse ReplayEvents(ReplayEventsCommand command)
         {

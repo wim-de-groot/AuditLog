@@ -35,10 +35,13 @@ namespace AuditLog.Test
             var routingKeyMatcher = routingKeyMatcherMock.Object;
             var eventBusMock = new Mock<IEventBus>();
             var eventBus = eventBusMock.Object;
-            
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            eventBusMock.Setup(mock => mock.Model).Returns(model);
+
             // Act
             var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
-            
+
             // Assert
             Assert.IsInstanceOfType(commandListener, typeof(ICommandListener));
         }
@@ -70,8 +73,11 @@ namespace AuditLog.Test
             var routingKeyMatcher = routingKeyMatcherMock.Object;
             var eventBusMock = new Mock<IEventBus>();
             var eventBus = eventBusMock.Object;
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            eventBusMock.Setup(mock => mock.Model).Returns(model);
             var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
-            
+
             // Act
             commandListener.Handle(sender, basicDeliverEventArgs);
 
@@ -106,15 +112,18 @@ namespace AuditLog.Test
             var routingKeyMatcher = routingKeyMatcherMock.Object;
             var eventBusMock = new Mock<IEventBus>();
             var eventBus = eventBusMock.Object;
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            eventBusMock.Setup(mock => mock.Model).Returns(model);
             var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
-            
+
             // Act
             commandListener.Handle(sender, basicDeliverEventArgs);
 
             // Assert
             repositoryMock.Verify(mock => mock.FindBy(It.IsAny<LogEntryCriteria>()));
         }
-        
+
         [TestMethod]
         public void ReplayEventCallsFindByOnRepositoryWithRightCriteria()
         {
@@ -143,13 +152,16 @@ namespace AuditLog.Test
             var routingKeyMatcher = routingKeyMatcherMock.Object;
             var eventBusMock = new Mock<IEventBus>();
             var eventBus = eventBusMock.Object;
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            eventBusMock.Setup(mock => mock.Model).Returns(model);
             var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
             repositoryMock.Setup(mock => mock.FindBy(It.IsAny<LogEntryCriteria>()))
                 .Callback((LogEntryCriteria criteria) => logEntryCriteria = criteria);
-            
+
             // Act
             commandListener.Handle(sender, basicDeliverEventArgs);
-            
+
             //
             Assert.AreEqual("DomainEvent", logEntryCriteria.EventType);
             Assert.AreEqual("Test.*", logEntryCriteria.RoutingKey);
@@ -184,11 +196,14 @@ namespace AuditLog.Test
             var routingKeyMatcher = routingKeyMatcherMock.Object;
             var eventBusMock = new Mock<IEventBus>();
             var eventBus = eventBusMock.Object;
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            eventBusMock.Setup(mock => mock.Model).Returns(model);
             var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
-            
+
             // Act
             commandListener.Handle(sender, basicDeliverEventArgs);
-            
+
             // Assert
             eventReplayerMock.Verify(mock => mock.ReplayLogEntries(It.IsAny<IEnumerable<LogEntry>>()));
         }
@@ -221,6 +236,9 @@ namespace AuditLog.Test
             var routingKeyMatcher = routingKeyMatcherMock.Object;
             var eventBusMock = new Mock<IEventBus>();
             var eventBus = eventBusMock.Object;
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            eventBusMock.Setup(mock => mock.Model).Returns(model);
             eventBusMock.Setup(mock => mock.PublishCommand(It.IsAny<ReplayEventsResponse>()))
                 .Callback((DomainCommand response) => result = response as ReplayEventsResponse);
             var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
@@ -261,12 +279,15 @@ namespace AuditLog.Test
             var routingKeyMatcher = routingKeyMatcherMock.Object;
             var eventBusMock = new Mock<IEventBus>();
             var eventBus = eventBusMock.Object;
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            eventBusMock.Setup(mock => mock.Model).Returns(model);
             eventBusMock.Setup(mock => mock.PublishCommand(It.IsAny<ReplayEventsResponse>()))
                 .Callback((DomainCommand response) => result = response as ReplayEventsResponse);
             var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
             repositoryMock.Setup(mock => mock.FindBy(It.IsAny<LogEntryCriteria>()))
                 .Throws(new Exception());
-            
+
             // Act
             commandListener.Handle(sender, basicDeliverEventArgs);
 
@@ -302,6 +323,9 @@ namespace AuditLog.Test
             var routingKeyMatcher = routingKeyMatcherMock.Object;
             var eventBusMock = new Mock<IEventBus>();
             var eventBus = eventBusMock.Object;
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            eventBusMock.Setup(mock => mock.Model).Returns(model);
             var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
             repositoryMock.Setup(mock => mock.FindBy(It.IsAny<LogEntryCriteria>()))
                 .Returns(new List<LogEntry>
@@ -321,17 +345,17 @@ namespace AuditLog.Test
                         EventType = "DomainEvent"
                     }
                 });
-            
+
             // Act
             commandListener.Handle(sender, basicDeliverEventArgs);
-            
+
             // Assert
             routingKeyMatcherMock.Verify(mock => mock.IsMatch("Test.*", It.IsAny<string>()));
         }
 
         [TestMethod]
         public void ReplayEventsShouldCallRegisterReplayExchange()
-        { 
+        {
             // Arrange
             var sender = new object();
             var basicDeliverEventArgs = new BasicDeliverEventArgs
@@ -357,6 +381,67 @@ namespace AuditLog.Test
             var routingKeyMatcher = routingKeyMatcherMock.Object;
             var eventBusMock = new Mock<IEventBus>();
             var eventBus = eventBusMock.Object;
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            eventBusMock.Setup(mock => mock.Model).Returns(model);
+            var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
+            repositoryMock.Setup(mock => mock.FindBy(It.IsAny<LogEntryCriteria>()))
+                .Returns(new List<LogEntry>
+                {
+                    new LogEntry
+                    {
+                        Timestamp = new DateTime(2019, 5, 8).Ticks,
+                        RoutingKey = "Test.*",
+                        EventJson = "{'title': 'Some title'}",
+                        EventType = "DomainEvent"
+                    },
+                    new LogEntry
+                    {
+                        Timestamp = new DateTime(2019, 7, 2).Ticks,
+                        RoutingKey = "Test.#",
+                        EventJson = "{'title': 'Some title'}",
+                        EventType = "DomainEvent"
+                    }
+                });
+
+            // Act
+            commandListener.Handle(sender, basicDeliverEventArgs);
+
+            // Assert
+            eventReplayerMock.Verify(mock => mock.RegisterReplayExchange("AuditLog.TestExchange"));
+        }
+
+        [TestMethod]
+        public void HandleShouldCallBasicAck()
+        {
+            // Arrange
+            var sender = new object();
+            var basicDeliverEventArgs = new BasicDeliverEventArgs
+            {
+                BasicProperties = new BasicProperties
+                {
+                    Type = "SomeCommand",
+                    Timestamp = new AmqpTimestamp(new DateTime(2019, 6, 4).Ticks),
+                },
+                Body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new ReplayEventsCommand
+                {
+                    EventType = "DomainEvent",
+                    RoutingKey = "Test.*",
+                    ReplayExchangeName = "AuditLog.TestExchange"
+                })),
+                RoutingKey = "TestQueue",
+            };
+            var eventReplayerMock = new Mock<IEventReplayer>();
+            var repositoryMock = new Mock<IAuditLogRepository<LogEntry, long>>();
+            var repository = repositoryMock.Object;
+            var eventReplayer = eventReplayerMock.Object;
+            var routingKeyMatcherMock = new Mock<IRoutingKeyMatcher>();
+            var routingKeyMatcher = routingKeyMatcherMock.Object;
+            var eventBusMock = new Mock<IEventBus>();
+            var eventBus = eventBusMock.Object;
+            var modelMock = new Mock<IModel>();
+            var model = modelMock.Object;
+            eventBusMock.Setup(mock => mock.Model).Returns(model);
             var commandListener = new AuditLogCommandListener(repository, eventReplayer, routingKeyMatcher, eventBus);
             repositoryMock.Setup(mock => mock.FindBy(It.IsAny<LogEntryCriteria>()))
                 .Returns(new List<LogEntry>
@@ -381,7 +466,7 @@ namespace AuditLog.Test
             commandListener.Handle(sender, basicDeliverEventArgs);
             
             // Assert
-            eventReplayerMock.Verify(mock => mock.RegisterReplayExchange("AuditLog.TestExchange"));
+            modelMock.Verify(mock => mock.BasicAck(It.IsAny<ulong>(), false));
         }
     }
 }
