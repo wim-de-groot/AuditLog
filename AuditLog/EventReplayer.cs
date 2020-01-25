@@ -50,7 +50,7 @@ namespace AuditLog
             
             channel.BasicPublish(
                 exchange: _replayExchangeName,
-                routingKey: $"Replay.{logEntry.RoutingKey}",
+                routingKey: logEntry.RoutingKey,
                 basicProperties: properties,
                 body: body
                 );

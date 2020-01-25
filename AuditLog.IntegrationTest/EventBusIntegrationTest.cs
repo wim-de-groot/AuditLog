@@ -95,7 +95,7 @@ namespace AuditLog.IntegrationTest
                 Assert.IsTrue(context.LogEntries.Any(entry => entry.EventJson.Contains("Hello world")));
             }
         }
-        
+
         [TestMethod]
         public void HandleShouldBeCalledOnCommandHandlerWhenMessageIsSend()
         {
@@ -114,6 +114,7 @@ namespace AuditLog.IntegrationTest
             // Assert
             commandListenerMock.Verify(mock => mock.Handle(It.IsAny<object>(), It.IsAny<BasicDeliverEventArgs>()));
         }
+        
 
         private static void PublishMessage(IEventBus eventBus)
         {
@@ -126,6 +127,19 @@ namespace AuditLog.IntegrationTest
             eventBus.Model.BasicPublish("TestExchange", "Test.Test.#", false, basicProperties, body);
         }
     }
+
+    internal class TestCommandListener : ICommandListener
+    {
+        private readonly IEventBus _eventBus;
+        public TestCommandListener(IEventBus eventBus)
+        {
+            _eventBus = eventBus;
+        }
+        public void Handle(object sender, BasicDeliverEventArgs basicDeliverEventArgs)
+        {
+            _eventBus.Model.BasicAck(basicDeliverEventArgs.DeliveryTag, false);
+        }
+    } 
 
     internal class Message
     {
