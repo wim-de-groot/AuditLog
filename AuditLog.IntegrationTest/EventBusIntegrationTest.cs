@@ -115,18 +115,6 @@ namespace AuditLog.IntegrationTest
             commandListenerMock.Verify(mock => mock.Handle(It.IsAny<object>(), It.IsAny<BasicDeliverEventArgs>()));
         }
 
-        [TestMethod]
-        public void TestReplaying()
-        {
-            using var eventBus = new EventBusBuilder()
-                .FromEnvironment()
-                .CreateEventBus(new ConnectionFactory());
-            var awaitHandle = new ManualResetEvent(false);
-            
-            eventBus.PublishCommand(new ReplayEventsCommand{ ReplayExchangeName = "Kantilever", RoutingKey = "#"});
-            awaitHandle.WaitOne(10000);
-        }
-
         private static void PublishMessage(IEventBus eventBus)
         {
             var message = new Message {Text = "Hello world"};
