@@ -1,4 +1,4 @@
 # AuditLog
-Audit log for RabbitMQ in combination with Miffy, a framework for RabbitMQ.
+If your microservice architecture uses RabbitMQ and then this might be a helpfull tool in your cluster.
 
-Link to Miffy: https://github.com/survivorbat/rabbitmq-miffy-wrapper
+Since Rabbitmq can not replay events by default this app will add on to this functionality.
