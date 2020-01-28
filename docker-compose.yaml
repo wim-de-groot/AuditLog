@@ -25,7 +25,7 @@ services:
     expose:
       - "3306"
   auditlog:
-    image: wimdegroot/audit-log:8597-management
+    image: wimdegroot/audit-log:8598
     container_name: auditlog
     restart: unless-stopped
     environment:
