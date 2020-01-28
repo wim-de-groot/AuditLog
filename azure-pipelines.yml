@@ -2,7 +2,6 @@ trigger:
   branches:
     include:
       - master
-      - develop
 
   paths:
     include:
@@ -12,8 +11,6 @@ trigger:
       - AuditLog.DAL.Test/
       - AuditLog.Domain/
       - AuditLog.Test/
-      - AuditLog.WebApi/
-      - AuditLog.WebApi.Test/
       - AuditLog.IntegrationTest/
       - azure-pipelines.yaml
 
@@ -25,11 +22,9 @@ variables:
     AuditLog.DAL/AuditLog.DAL.csproj
     AuditLog.Domain/AuditLog.Domain.csproj
     AuditLog.ConsoleClient/AuditLog.ConsoleClient.csproj
-    AuditLog.WebApi.csproj
   testProjects: |
     AuditLog.Test/AuditLog.Test.csproj
     AuditLog.DAL.Test/AuditLog.DAL.Test.csproj
-    AuditLog.WebApi.Test.csproj
   integrationTestProjects: |
     AuditLog.IntegrationTest/AuditLog.IntegrationTest.csproj
   projectKey: WimG:AudiLog
@@ -67,14 +62,17 @@ stages:
 
           - task: SonarQubeAnalyze@4
             condition: eq(variables['build.sourcebranch'], 'refs/heads/master')
+
           - task: SonarQubePublish@4
             condition: eq(variables['build.sourcebranch'], 'refs/heads/master')
             inputs:
               pollingTimeoutSec: '300'
+
           - task: sonar-buildbreaker@8
             condition: eq(variables['build.sourcebranch'], 'refs/heads/master')
             inputs:
               SonarQube: 'SonarQube Service Connection'
+
   - stage: Integration
     displayName: Integration Tests
     dependsOn: Build
@@ -87,12 +85,14 @@ stages:
           - bash: |
               docker run -d -p 5672:5672 --name rabbitmq rabbitmq:3-alpine
             displayName: 'docker run rabbitmq'
+
           - task: DotNetCoreCLI@2
             displayName: 'dotnet test'
             inputs:
               command: test
               projects: $(integrationTestProjects)
               arguments: '--configuration $(BuildConfiguration)'
+
   - stage: Release
     displayName: Release
     jobs: 
@@ -120,30 +120,5 @@ stages:
               tags: $(Build.BuildId)
               buildContext: 'AuditLog.ConsoleClient/'
               Dockerfile: 'AuditLog.ConsoleClient/Dockerfile'
-
-      - job: Release_WebApi
-        displayName: Release_WebApi
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: DotNetCoreCLI@2
-            displayName: 'dotnet publish'
-            inputs:
-              command: publish
-              publishWebProjects: false
-              projects: AuditLog.WebApi/AuditLog.WebApi.csproj
-              arguments: '--configuration Release --self-contained -f "netcoreapp3.0" -r "linux-x64" --output "AuditLog.WebApi/obj/docker/publish"'
-              patchVersion: $(Build.BuildId)
-              zipAfterPublish: false
-              modifyOutputPath: false
-
-          - task: Docker@2
-            displayName: 'docker build and publish'
-            inputs:
-              containerRegistry: 'wimdegroot'
-              repository: 'wimdegroot/audit-log'
-              tags: $(Build.BuildId)-management
-              buildContext: 'AuditLog.WebApi/'
-              Dockerfile: 'AuditLog.WebApi/Dockerfile'
 
           
